@@ -48,8 +48,7 @@
       },
       {
          "action":"reject",
-         "method": "drop",
-   "rule_set":["geosite-category-ads-all","geosite-category-public-tracker"]
+         "rule_set":["geosite-category-ads-all","geosite-category-public-tracker"]
       },
       {
         "action": "route",
@@ -299,8 +298,6 @@
       },
       {
         "action": "reject",
-        "method": "default",
-        "no_drop": true 
         "type":"logical",
         "mode":"and",
         "rules": [
@@ -312,8 +309,7 @@
       },
       {
         "action": "reject",
-        "method": "drop",
-   "rule_set":["geosite-category-ads-all","geosite-category-public-tracker"]
+        "rule_set":["geosite-category-ads-all","geosite-category-public-tracker"]
       },
       {
         "action": "route",
