@@ -317,7 +317,7 @@
       },
       {
         "action": "route",
-        "rule_set":["geosite-youtube","geoip-google", "geosite-google","geosite-github","geosite-googleplay"],
+        "rule_set":["geosite-youtube","geoip-google","geosite-google","geosite-github","geosite-googleplay"],
         "outbound":"Google"
       },
       {
