@@ -23,8 +23,8 @@
       },
       {
         "tag":"local",
-        "type":"quic",
-        "server_port":853,
+        "type":"h3",
+        "server_port":443,
         "tls": {"enabled": true},
         "server":"223.5.5.5"
       }
@@ -48,6 +48,7 @@
       },
       {
          "action":"reject",
+         "method": "drop",
          "rule_set":["geosite-category-ads-all","geosite-category-public-tracker"]
       },
       {
@@ -298,6 +299,7 @@
       },
       {
         "action": "reject",
+        "method": "default",
         "type":"logical",
         "mode":"and",
         "rules": [
@@ -309,6 +311,7 @@
       },
       {
         "action": "reject",
+        "method": "drop",
         "rule_set":["geosite-category-ads-all","geosite-category-public-tracker"]
       },
       {
