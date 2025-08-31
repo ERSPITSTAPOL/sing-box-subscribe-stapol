@@ -1,5 +1,6 @@
 {
  "log":{
+    "disabled": false,
     "level":"error",
     "timestamp": false
  },
@@ -49,7 +50,7 @@
       {
          "action":"reject",
          "method": "drop",
-         "rule_set":["geosite-category-ads-all","geosite-category-public-tracker"]
+   "rule_set":["geosite-category-ads-all","geosite-category-public-tracker"]
       },
       {
         "action": "route",
@@ -246,6 +247,7 @@
     {
       "tag":"auto",
       "type":"urltest",
+      "interrupt_exist_connections":true,
       "outbounds":[
         "{all}"
       ],
@@ -286,6 +288,11 @@
       {
        "action": "hijack-dns",
        "protocol": "dns"
+      },
+      {
+        "action": "route",
+        "network": "icmp",
+        "outbound": "direct"
       },
       {
         "action": "route",
@@ -441,7 +448,7 @@
         "tag": "geosite-cn",
         "type": "remote",
         "format": "binary",
-        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo-lite/geosite/cn.srs",
+        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/cn.srs",
         "download_detour": "direct"
       }
     ]
