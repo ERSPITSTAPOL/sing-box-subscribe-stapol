@@ -222,7 +222,7 @@ def get_parser(node):
 
 
 def get_content_from_url(url, n=10):
-    UA = ''
+    UA = 'SingBox'
     print('处理: \033[31m' + url + '\033[0m')
     # print('Đang tải link đăng ký: \033[31m' + url + '\033[0m')
     prefixes = ["vmess://", "vless://", "ss://", "ssr://", "trojan://", "tuic://", "hysteria://", "hysteria2://",
