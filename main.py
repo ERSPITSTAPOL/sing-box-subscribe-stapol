@@ -233,8 +233,8 @@ def get_content_from_url(url, n=10):
     for subscribe in providers["subscribes"]:
         if 'enabled' in subscribe and not subscribe['enabled']:
             continue
-        if subscribe['url'] == url:
-            UA = subscribe.get('User-Agent', '')
+        if url.startswith(subscribe['url']):
+            UA = subscribe.get('User-Agent', 'ClashMeta')
     response = tool.getResponse(url, custom_user_agent=UA)
     concount = 1
     while concount <= n and not response:
