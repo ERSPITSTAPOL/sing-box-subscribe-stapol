@@ -1,7 +1,6 @@
 import tool
 import re
 from urllib.parse import urlparse, parse_qs, unquote
-
 def parse(data):
     info = data[:]
     server_info = urlparse(info)
@@ -9,6 +8,8 @@ def parse(data):
         k: v if len(v) > 1 else v[0]
         for k, v in parse_qs(server_info.query).items()
     }
+    up_mbps = int(netquery.get('up_mbps', 1000))
+    down_mbps = int(netquery.get('down_mbps', 1000))
     if server_info.path:
         server_info = server_info._replace(netloc=server_info.netloc + server_info.path, path="")
     node = {
@@ -20,7 +21,9 @@ def parse(data):
             'enabled': True,
             'server_name': netquery.get('sni', netquery.get('peer', '')),
             'insecure': False
-        }
+        },
+        'up_mbps': up_mbps,
+        'down_mbps': down_mbps
     }
     ports_match = re.search(r',(\d{1,5})-(\d{1,5})', server_info.netloc)
     mport_match = None
