@@ -79,11 +79,9 @@ def action_keywords(nodes, action, keywords):
     '''
     # Join the patterns list into a single pattern, separated by '|'
     combined_pattern = '|'.join(keywords)
-
     # If the combined pattern is empty or only contains whitespace, return the original nodes
     if not combined_pattern or combined_pattern.isspace():
         return nodes
-
     # Compile the combined regex pattern
     compiled_pattern = re.compile(combined_pattern)
 
@@ -111,90 +109,21 @@ def add_emoji(nodes, subscribe):
             if node.get('detour'):
                 node['detour'] = tool.rename(node['detour'])
 
-def process_subscribes(subscribes):
-    nodes = {}
-    for subscribe in subscribes:
-        if 'enabled' in subscribe and not subscribe['enabled']:
-            continue
-        if 'sing-box-subscribe-doraemon.vercel.app' in subscribe['url']:
-            continue
-        
-        # 处理多个 URL 和 prefix 参数
-        urls = subscribe['url'].split('&')  # 通过 & 分割多个 URL
-        prefixes = []
-        for param in urls:
-            if param.startswith('prefix='):
-                prefixes.append(param.split('=')[1])  # 提取 prefix 参数
-        
-        for i, url in enumerate(urls):
-            if not url.startswith('prefix='):  # 只处理非 prefix 参数的 URL
-                _nodes = get_nodes(url)
-                if _nodes and len(_nodes) > 0:
-                    # 根据 prefix 设置不同的前缀
-                    if i < len(prefixes):
-                        add_prefix(_nodes, prefixes[i])  # 添加前缀
-                    add_emoji(_nodes, subscribe)
-                    nodefilter(_nodes, subscribe)
-                    if subscribe.get('subgroup'):
-                        subscribe['tag'] = subscribe['tag'] + '-' + subscribe['subgroup'] + '-' + 'subgroup'
-                    if not nodes.get(subscribe['tag']):
-                        nodes[subscribe['tag']] = []
-                    nodes[subscribe['tag']] += _nodes
-                else:
-                    print('没有在此订阅下找到节点，跳过')
-        
-    tool.proDuplicateNodeName(nodes)
-    return nodes
+def nodefilter(nodes, subscribe):
+    if subscribe.get('ex-node-name'):
+        ex_nodename = re.split(r'[,\|]', subscribe['ex-node-name'])
+        for exns in ex_nodename:
+            for node in nodes[:]:  # 遍历 nodes 的副本，以便安全地删除元素
+                if exns in node['tag']:
+                    nodes.remove(node)
 
 def get_nodes(url):
-    processed_nodes = []  # 用来存储所有 URL 的处理结果
-
-    # 如果输入的是单个 URL，将其转为列表
-    if isinstance(url, str):
-        url = [url]  # 将单个 URL 转换为列表
-    
-    for single_url in url:
-        if single_url.startswith('sub://'):
-            single_url = tool.b64Decode(single_url[6:]).decode('utf-8')
-        urlstr = urlparse(single_url)
-        
-        if not urlstr.scheme:
-            try:
-                content = tool.b64Decode(single_url).decode('utf-8')
-                data = parse_content(content)
-                processed_list = []
-                for item in data:
-                    if isinstance(item, tuple):
-                        processed_list.extend([item[0], item[1]])  # 处理shadowtls
-                    else:
-                        processed_list.append(item)
-                processed_nodes.extend(processed_list)  # 合并结果
-            except:
-                content = get_content_form_file(single_url)
-        else:
-            content = get_content_from_url(single_url)
-        
-        if type(content) == dict:
-            if 'proxies' in content:
-                share_links = []
-                for proxy in content['proxies']:
-                    share_links.append(clash2v2ray(proxy))
-                data = '\n'.join(share_links)
-                data = parse_content(data)
-                processed_list = []
-                for item in data:
-                    if isinstance(item, tuple):
-                        processed_list.extend([item[0], item[1]])  # 处理shadowtls
-                    else:
-                        processed_list.append(item)
-                processed_nodes.extend(processed_list)  # 合并结果
-            elif 'outbounds' in content:
-                outbounds = []
-                excluded_types = {"selector", "urltest", "direct", "block", "dns"}
-                filtered_outbounds = [outbound for outbound in content['outbounds'] if outbound.get("type") not in excluded_types]
-                outbounds.extend(filtered_outbounds)
-                processed_nodes.extend(outbounds)  # 合并结果
-        else:
+    if url.startswith('sub://'):
+        url = tool.b64Decode(url[6:]).decode('utf-8')
+    urlstr = urlparse(url)
+    if not urlstr.scheme:
+        try:
+            content = tool.b64Decode(url).decode('utf-8')
             data = parse_content(content)
             processed_list = []
             for item in data:
@@ -202,9 +131,42 @@ def get_nodes(url):
                     processed_list.extend([item[0], item[1]])  # 处理shadowtls
                 else:
                     processed_list.append(item)
-            processed_nodes.extend(processed_list)  # 合并结果    
-    return processed_nodes
-    
+            return processed_list
+        except:
+            content = get_content_form_file(url)
+    else:
+        content = get_content_from_url(url)
+    # print (content)
+    if type(content) == dict:
+        if 'proxies' in content:
+            share_links = []
+            for proxy in content['proxies']:
+                share_links.append(clash2v2ray(proxy))
+            data = '\n'.join(share_links)
+            data = parse_content(data)
+            processed_list = []
+            for item in data:
+                if isinstance(item, tuple):
+                    processed_list.extend([item[0], item[1]])  # 处理shadowtls
+                else:
+                    processed_list.append(item)
+            return processed_list
+        elif 'outbounds' in content:
+            outbounds = []
+            excluded_types = {"selector", "urltest", "direct", "block", "dns"}
+            filtered_outbounds = [outbound for outbound in content['outbounds'] if outbound.get("type") not in excluded_types]
+            outbounds.extend(filtered_outbounds)
+            return outbounds
+    else:
+        data = parse_content(content)
+        processed_list = []
+        for item in data:
+            if isinstance(item, tuple):
+                processed_list.extend([item[0], item[1]])  # 处理shadowtls
+            else:
+                processed_list.append(item)
+        return processed_list
+
 def parse_content(content):
     # firstline = tool.firstLine(content)
     # # print(firstline)
@@ -241,8 +203,8 @@ def get_parser(node):
         return None
     return parsers_mod[proto].parse
 
-def get_content_from_url(url, n=10, user_agent='ClashMeta'):
-    UA = user_agent
+def get_content_from_url(url, n=10):
+    UA = ''
     print('处理: \033[31m' + url + '\033[0m')
     prefixes = ["vmess://", "vless://", "ss://", "ssr://", "trojan://", "tuic://", "hysteria://", "hysteria2://",
                 "hy2://", "wg://", "wireguard://", "http2://", "socks://", "socks5://"]
@@ -252,7 +214,7 @@ def get_content_from_url(url, n=10, user_agent='ClashMeta'):
     for subscribe in providers["subscribes"]:
         if 'enabled' in subscribe and not subscribe['enabled']:
             continue
-        if url.startswith(subscribe['url']):
+        if subscribe['url'] == url:
             UA = subscribe.get('User-Agent', '')
     response = tool.getResponse(url, custom_user_agent=UA)
     concount = 1
@@ -275,7 +237,7 @@ def get_content_from_url(url, n=10, user_agent='ClashMeta'):
         print('没有从订阅链接获取到任何内容')
         return None
     if not response_text:
-        response = tool.getResponse(url, custom_user_agent='ClashMeta')
+        response = tool.getResponse(url, custom_user_agent='clashmeta')
         response_text = response.text
     if any(response_text.startswith(prefix) for prefix in prefixes):
         response_text = tool.noblankLine(response_text)
@@ -418,7 +380,6 @@ def pro_dns_from_route_rules(route_rule):
         dns_rule_obj['server'] = route_rule['outbound'] + '_dns' if route_rule['outbound'] != 'direct' else \
             providers["auto_set_outbounds_dns"]['direct']
     return dns_rule_obj
-
 
 def pro_node_template(data_nodes, config_outbound, group):
     if config_outbound.get('filter'):
@@ -591,6 +552,7 @@ if __name__ == '__main__':
         template_list = get_template()
         if len(template_list) < 1:
             print('没有找到模板文件')
+            # print('Không tìm thấy file mẫu')
             sys.exit()
         display_template(template_list)
         uip = select_config_template(template_list, selected_template_index=args.template_index)
