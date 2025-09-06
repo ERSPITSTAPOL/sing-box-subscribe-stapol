@@ -204,7 +204,7 @@ def get_parser(node):
     return parsers_mod[proto].parse
 
 def get_content_from_url(url, n=10):
-    UA = ''
+    UA = 'ClashMeta'
     print('处理: \033[31m' + url + '\033[0m')
     prefixes = ["vmess://", "vless://", "ss://", "ssr://", "trojan://", "tuic://", "hysteria://", "hysteria2://",
                 "hy2://", "wg://", "wireguard://", "http2://", "socks://", "socks5://"]
