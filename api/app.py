@@ -12,8 +12,8 @@ from datetime import datetime, timedelta
 app = Flask(__name__, template_folder='../templates')  # 指定模板文件夹的路径
 app.secret_key = 'sing-box'  # 替换为实际的密钥
 data_json = {}
-os.environ['TEMP_JSON_DATA'] = '{"subscribes":[{"url":"URL","tag":"tag_1","enabled":true,"emoji":1,"subgroup":"","prefix":"","User-Agent":"v2rayng"},{"url":"URL","tag":"tag_2","enabled":false,"emoji":0,"subgroup":"命名/named","prefix":"❤️","User-Agent":"clashmeta"}],"auto_set_outbounds_dns":{"proxy":"","direct":""},"save_config_path":"./config.json","auto_backup":false,"exclude_protocol":"ssr","config_template":"","Only-nodes":false}'
-data_json['TEMP_JSON_DATA'] = '{"subscribes":[{"url":"URL","tag":"tag_1","enabled":true,"emoji":1,"subgroup":"","prefix":"","User-Agent":"v2rayng"},{"url":"URL","tag":"tag_2","enabled":false,"emoji":0,"subgroup":"命名/named","prefix":"❤️","User-Agent":"clashmeta"}],"auto_set_outbounds_dns":{"proxy":"","direct":""},"save_config_path":"./config.json","auto_backup":false,"exclude_protocol":"ssr","config_template":"","Only-nodes":false}'
+os.environ['TEMP_JSON_DATA'] = '{"subscribes":[{"url":"URL","tag":"tag_1","enabled":true,"emoji":1,"subgroup":"","prefix":"","User-Agent":""},{"url":"URL","tag":"tag_2","enabled":true,"emoji":0,"subgroup":"命名/named","prefix":"","User-Agent":"clashmeta"}],"auto_set_outbounds_dns":{"proxy":"","direct":""},"save_config_path":"./config.json","auto_backup":false,"exclude_protocol":"ssr","config_template":"","Only-nodes":false}'
+data_json['TEMP_JSON_DATA'] = '{"subscribes":[{"url":"URL","tag":"tag_1","enabled":true,"emoji":1,"subgroup":"","prefix":"","User-Agent":""},{"url":"URL","tag":"tag_2","enabled":false,"emoji":0,"subgroup":"命名/named","prefix":"","User-Agent":""}],"auto_set_outbounds_dns":{"proxy":"","direct":""},"save_config_path":"./config.json","auto_backup":false,"exclude_protocol":"ssr","config_template":"","Only-nodes":false}'
 
 # 获取系统默认的临时目录路径
 TEMP_DIR = tempfile.gettempdir()
@@ -22,7 +22,6 @@ TEMP_DIR = tempfile.gettempdir()
 # 存储配置文件的过期时间（10分钟）
 config_expiry_time = None
 """
-
 def cleanup_temp_config():
     global config_expiry_time, config_file_path
     if config_expiry_time and datetime.now() > config_expiry_time:
@@ -81,7 +80,6 @@ def update_providers():
         flash('File Providers.json đã được cập nhật', 'Thành công^^')
     except Exception as e:
         flash(f'更新Providers.json文件时出错；{str(e)}', 'error')
-        flash(f'Có lỗi khi cập nhật file Providers.json; {str(e)}', 'Lỗi!!!')
     return redirect(url_for('index'))
 
 @app.route('/edit_temp_json', methods=['GET', 'POST'])
@@ -94,15 +92,13 @@ def edit_temp_json():
                 temp_json_data = json.loads(new_temp_json_data)
                 os.environ['TEMP_JSON_DATA'] = json.dumps(temp_json_data, indent=4, ensure_ascii=False)
                 #flash('TEMP_JSON_DATA 已更新', 'success')
-                #flash('TEMP_JSON_DATA đã được cập nhật', 'Thành công^^')
                 return jsonify({'status': 'success'})  # 返回成功状态
             else:
-                return jsonify({'status': 'error', 'message': 'TEMP_JSON_DATA 不能为空(không thể trống)'}, content_type='application/json; charset=utf-8')  # 返回错误状态和消息
+                return jsonify({'status': 'error', 'message': 'TEMP_JSON_DATA 不能为空'}, content_type='application/json; charset=utf-8')  # 返回错误状态和消息
         except Exception as e:
             flash('TEMP_JSON_DATA 不能为空', 'error')
             flash('TEMP_JSON_DATA 格式出错：注意订阅链接末尾不要有换行，要在双引号""里面！！！')
-            flash('TEMP_JSON_DATA không thể trống', 'Lỗi!!!')
-            flash('Lỗi định dạng TEMP_JSON_DATA: lưu ý rằng liên kết đăng ký không được có ký tự xuống dòng ở cuối, mà phải nằm trong dấu ngoặc kép ""')
+            flash('TEMP_JSON_DATA')
             flash('TEMP_JSON_DATA cannot be empty', 'error')
             flash(f'Error updating TEMP_JSON_DATA: note that the subscription link should not have a newline at the end, but should be inside double quotes ""')
             return jsonify({'status': 'error', 'message': str(e)})  # 返回错误状态和消息
@@ -120,7 +116,7 @@ def config(url):
                         content_type='application/json; charset=utf-8', status=403)
     # temp_json_data_str = os.environ['TEMP_JSON_DATA']
     # temp_json_data = json.loads(temp_json_data_str)
-    temp_json_data = json.loads('{"subscribes":[{"url":"URL","tag":"tag_1","enabled":true,"emoji":1,"subgroup":"","prefix":"","ex-node-name": "","User-Agent":"v2rayng"},{"url":"URL","tag":"tag_2","enabled":false,"emoji":1,"subgroup":"","prefix":"","ex-node-name": "","User-Agent":"v2rayng"},{"url":"URL","tag":"tag_3","enabled":false,"emoji":1,"subgroup":"","prefix":"","ex-node-name": "","User-Agent":"v2rayng"}],"auto_set_outbounds_dns":{"proxy":"","direct":""},"save_config_path":"./config.json","auto_backup":false,"exclude_protocol":"ssr","config_template":"","Only-nodes":false}')
+    temp_json_data = json.loads('{"subscribes":[{"url":"URL","tag":"tag_1","enabled":true,"emoji":1,"subgroup":"","prefix":"","ex-node-name": "","User-Agent":""},{"url":"URL","tag":"tag_2","enabled":false,"emoji":1,"subgroup":"","prefix":"","ex-node-name": "","User-Agent":""},{"url":"URL","tag":"tag_3","enabled":false,"emoji":1,"subgroup":"","prefix":"","ex-node-name": "","User-Agent":""}],"auto_set_outbounds_dns":{"proxy":"","direct":""},"save_config_path":"./config.json","auto_backup":false,"exclude_protocol":"ssr","config_template":"","Only-nodes":false}')
     subscribe = temp_json_data['subscribes'][0]
     subscribe2 = temp_json_data['subscribes'][1]
     subscribe3 = temp_json_data['subscribes'][2]
@@ -190,8 +186,8 @@ def config(url):
     emoji_param = request.args.get('emoji', '')
     file_param = request.args.get('file', '')
     tag_param = request.args.get('tag', '')
-    ua_param = request.args.get('ua', 'Singbox')
-    UA_param = request.args.get('UA', 'Singbox')
+    ua_param = request.args.get('ua', 'SFA')
+    UA_param = request.args.get('UA', 'SFA')
     pre_param = request.args.get('prefix', '')
     eps_param = request.args.get('eps', '')
     enn_param = request.args.get('enn', '')
@@ -273,7 +269,6 @@ def config(url):
             config_content = config_file.read()
             if config_content:
                 flash('配置文件生成成功', 'success')
-                flash('Tạo file cấu hình thành công', 'Thành công^^')
         config_data = json.loads(config_content)
         return Response(config_content, content_type='text/plain; charset=utf-8')
     except subprocess.CalledProcessError as e:
@@ -282,7 +277,7 @@ def config(url):
         #return jsonify({'status': 'error', 'message': str(e)}) 
     except Exception as e:
         #flash(f'Error occurred while generating the configuration file: {str(e)}', 'error')
-        return Response(json.dumps({'status': 'error', 'message_CN': '认真看刚刚的网页说明、github写的reademe文件;', 'message_VN': 'Quá thời gian phân tích đăng ký: Vui lòng kiểm tra xem liên kết đăng ký có chính xác không hoặc vui lòng chuyển sang "nogroupstemplate" và thử lại; Vui lòng không chỉnh sửa giá trị "tag", trừ khi bạn hiểu nó làm gì;', 'message_EN': 'Subscription parsing timeout: Please check if the subscription link is correct or please change to "no_groups_template" and try again; Please do not modify the "tag" value unless you understand what it does;'}, indent=4,ensure_ascii=False), content_type='application/json; charset=utf-8', status=500)
+        return Response(json.dumps({'status': 'error', 'message_CN': '认真看刚刚的网页说明、github写的reademe文件;',  'message_EN': 'Subscription parsing timeout: Please check if the subscription link is correct or please change to "no_groups_template" and try again; Please do not modify the "tag" value unless you understand what it does;'}, indent=4,ensure_ascii=False), content_type='application/json; charset=utf-8', status=500)
 
 @app.route('/generate_config', methods=['POST'])
 def generate_config():
@@ -290,7 +285,6 @@ def generate_config():
         selected_template_index = request.form.get('template_index')
         if not selected_template_index:
             flash('请选择一个配置模板', 'error')
-            flash('Vui lòng chọn một mẫu cấu hình', 'Lỗi!!!')
             return redirect(url_for('index'))
         temp_json_data = json.dumps(os.environ['TEMP_JSON_DATA'], indent=4, ensure_ascii=False)
         # 修改这里：执行main.py并传递模板序号作为命令行参数，如果未指定，则传递空字符串
@@ -308,7 +302,6 @@ def generate_config():
             config_content = config_file.read()
             if config_content:
                 flash('配置文件生成成功', 'success')
-                flash('Tạo file cấu hình thành công', 'Thành công^^')
         config_data = json.loads(config_content)
         return Response(config_content, content_type='text/plain; charset=utf-8')
     except subprocess.CalledProcessError as e:
@@ -316,7 +309,7 @@ def generate_config():
         return Response(json.dumps({'status': 'error'}, indent=4,ensure_ascii=False), content_type='application/json; charset=utf-8', status=500)
     except Exception as e:
         #flash(f'Error occurred while generating the configuration file: {str(e)}', 'error')
-        return Response(json.dumps({'status': 'error', 'message_CN': '认真看刚刚的网页说明、github写的reademe文件;', 'message_VN': 'Quá thời gian phân tích đăng ký: Vui lòng kiểm tra xem liên kết đăng ký có chính xác không hoặc vui lòng chuyển sang "nogroupstemplate" và thử lại; Vui lòng không chỉnh sửa giá trị "tag", trừ khi bạn hiểu nó làm gì;', 'message_EN': 'Subscription parsing timeout: Please check if the subscription link is correct or please change to "no_groups_template" and try again; Please do not modify the "tag" value unless you understand what it does;'}, indent=4,ensure_ascii=False), content_type='application/json; charset=utf-8', status=500)
+        return Response(json.dumps({'status': 'error', 'message_CN': '认真看刚刚的网页说明、github写的reademe文件;',  'message_EN': 'Subscription parsing timeout: Please check if the subscription link is correct or please change to "no_groups_template" and try again; Please do not modify the "tag" value unless you understand what it does;'}, indent=4,ensure_ascii=False), content_type='application/json; charset=utf-8', status=500)
     #return redirect(url_for('index'))
 
 @app.route('/clear_temp_json_data', methods=['POST'])
@@ -324,12 +317,9 @@ def clear_temp_json_data():
     try:
         os.environ['TEMP_JSON_DATA'] = json.dumps({}, indent=4, ensure_ascii=False)
         flash('TEMP_JSON_DATA 已清空', 'success')
-        flash('TEMP_JSON_DATA đã được làm trống', 'Thành công^^')
     except Exception as e:
         flash(f'清空 TEMP_JSON_DATA 时出错：{str(e)}', 'error')
-        flash(f'Có lỗi khi làm trống TEMP_JSON_DATA: {str(e)}', 'Lỗi!!!')
     return jsonify({'status': 'success'})
-
 """
 @app.route('/download_config', methods=['GET'])
 def download_config():
