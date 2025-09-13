@@ -77,7 +77,6 @@ def update_providers():
         # 更新providers.json文件
         write_providers_json(new_providers_data)
         flash('Providers.json文件已更新', 'success')
-        flash('File Providers.json đã được cập nhật', 'Thành công^^')
     except Exception as e:
         flash(f'更新Providers.json文件时出错；{str(e)}', 'error')
     return redirect(url_for('index'))
@@ -182,12 +181,11 @@ def config(url):
             full_url = f"{encoded_url}"
 
     #print (f"full_url: {full_url}")
-
     emoji_param = request.args.get('emoji', '')
     file_param = request.args.get('file', '')
     tag_param = request.args.get('tag', '')
-    ua_param = request.args.get('ua', '')
-    UA_param = request.args.get('UA', '')
+    ua_param = request.args.get('ua', 'SFA')
+    UA_param = request.args.get('UA', 'SFA')
     pre_param = request.args.get('prefix', '')
     eps_param = request.args.get('eps', '')
     enn_param = request.args.get('enn', '')
