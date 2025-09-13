@@ -10,7 +10,6 @@
     "cache_file":{"enabled":true,"store_fakeip":false,"store_rdrc":false}
   },
  "dns":{
-    "final":"remote",
     "servers":[
       {
         "tag":"remote",
@@ -56,6 +55,7 @@
       }
     ],
         "strategy":"ipv4_only",
+        "final":"remote",
         "disable_cache":true,
         "disable_expire":false,
         "independent_cache":false
@@ -253,7 +253,7 @@
       ],
       "url": "http://www.gstatic.com/generate_204",
       "interval": "0",
-      "idle_timeout": "5m",
+      "idle_timeout": "300s",
       "tolerance": 50
     },
     {
@@ -300,18 +300,6 @@
         "action": "route",
         "clash_mode":"Global",
         "outbound": "Global"
-      },
-      {
-        "action": "reject",
-        "method": "default",
-        "type":"logical",
-        "mode":"and",
-        "rules": [
-         {
-         "rule_set":"geosite-youtube",
-         "protocol":"quic"
-         }
-        ]
       },
       {
         "action": "reject",
