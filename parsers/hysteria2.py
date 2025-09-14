@@ -19,9 +19,7 @@ def parse(data):
             'enabled': True,
             'server_name': netquery.get('sni', netquery.get('peer', '')),
             'insecure': False
-        },
-        'up_mbps': up_mbps,
-        'down_mbps': down_mbps
+        }
     }
     ports_match = re.search(r',(\d{1,5})-(\d{1,5})', server_info.netloc)
     mport_match = None
@@ -45,7 +43,8 @@ def parse(data):
     if not node['tls'].get('server_name') or node['tls']['server_name'] == 'None':
         node['tls'].pop('server_name', None)
         node['tls']['insecure'] = True
-    node['tls']['alpn'] = (netquery.get('alpn') or "h3").strip('{}').split(',')
+    if 'alpn' in netquery:
+        node['tls']['alpn'] = netquery['alpn'].strip('{}').split(',')
     if netquery.get('obfs') not in ['none', '', None]:
         node['obfs'] = {
             'type': netquery['obfs'],
