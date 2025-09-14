@@ -253,7 +253,7 @@
       ],
       "url": "http://www.gstatic.com/generate_204",
       "interval": "0",
-      "idle_timeout": "300s",
+      "idle_timeout": "0",
       "tolerance": 50
     },
     {
