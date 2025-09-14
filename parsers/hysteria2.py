@@ -8,8 +8,6 @@ def parse(data):
         k: v if len(v) > 1 else v[0]
         for k, v in parse_qs(server_info.query).items()
     }
-    up_mbps = int(netquery.get('up_mbps', 1000))
-    down_mbps = int(netquery.get('down_mbps', 1000))
     if server_info.path:
         server_info = server_info._replace(netloc=server_info.netloc + server_info.path, path="")
     node = {
