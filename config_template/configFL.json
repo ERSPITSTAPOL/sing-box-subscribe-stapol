@@ -355,7 +355,7 @@
       },
       {
         "action": "route",
-        "domain_suffix": [".wikipedia.org",".m.wikipedia.org"]
+        "domain_suffix": [".wikipedia.org",".m.wikipedia.org"],
         "outbound":"📖Wikipedia"
       },
       {
