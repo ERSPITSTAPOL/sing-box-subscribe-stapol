@@ -355,7 +355,7 @@
       },
       {
         "action": "route",
-        "rule_set":"geosite-wikipedia",
+        "domain_suffix": [".wikipedia.org",".m.wikipedia.org"]
         "outbound":"📖Wikipedia"
       },
       {
@@ -427,13 +427,6 @@
         "type": "remote",
         "format": "binary",
         "url": "https://testingcf.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set-unstable/geosite-mastercard.srs",
-        "download_detour": "direct"
-      },
-      {
-        "tag": "geosite-wikipedia",
-        "type": "remote",
-        "format": "binary",
-        "url": "https://testingcf.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set-unstable/geosite-wikipedia.srs",
         "download_detour": "direct"
       },
       {
