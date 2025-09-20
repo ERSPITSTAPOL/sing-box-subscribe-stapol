@@ -1,1 +1,497 @@
-
+{
+ "log":{
+    "disabled": true,
+    "level":"error",
+    "timestamp": false
+  },
+ "certificate":{"store":"mozilla"},
+ "experimental":{
+    "clash_api":{"default_mode":"Rule"},
+    "cache_file":{"enabled":true,"store_fakeip":false,"store_rdrc":false}
+  },
+ "dns":{
+    "servers":[
+      {
+        "tag":"remote",
+        "type":"tcp",
+        "server":"1.1.1.1",
+        "detour":"🔚Final"
+      },
+      {
+        "tag":"local",
+        "type":"h3",
+        "server_port":443,
+        "tls": {"enabled": true},
+        "server":"223.5.5.5"
+      }
+    ],
+    "rules":[
+      {
+        "action": "route",
+        "clash_mode":"Direct",
+        "server":"local",
+        "strategy":"prefer_ipv4"
+      },
+      {
+        "action": "route",
+        "clash_mode":"Global",
+        "server":"remote"
+      },
+      {
+        "action": "route",
+        "rule_set":"geosite-googleplay",
+        "server":"remote"
+      },
+      {
+        "action":"reject",
+        "method": "drop",
+        "rule_set":["geosite-category-ads-all","geosite-category-public-tracker"]
+      },
+      {
+        "action": "route",
+        "rule_set":"geosite-cn",
+        "server":"local",
+        "strategy":"prefer_ipv4"
+      }
+    ],
+        "strategy":"ipv4_only",
+        "final":"remote",
+        "disable_cache":true,
+        "disable_expire":false,
+        "independent_cache":false
+  },
+ "inbounds": [
+    {
+      "tag": "tun-in",
+      "type": "tun",
+      "mtu": 9000,
+      "address": [
+        "172.19.0.0/30",
+        "fdfe:dcba:9876::0/126"
+      ],
+      "stack": "system",
+      "auto_route": true,
+      "strict_route": true,
+      "platform": {
+        "http_proxy": {
+          "enabled": false,
+          "server": "127.0.0.1",
+          "server_port": 7890
+        }
+      }
+    }
+  ],
+ "outbounds": [
+    {
+      "tag":"🌐Google",
+      "type":"selector",
+      "interrupt_exist_connections":true,
+      "outbounds":[
+        "🇭🇰HongKong",
+        "🇹🇼TaiWan",
+        "🇸🇬Singapore",
+        "🇯🇵Japan",
+        "🇰🇷South Korea",
+        "🇺🇸US",
+        "Others"
+      ]
+    },
+    {
+      "tag":"💬Telegram",
+      "type":"selector",
+      "interrupt_exist_connections":true,
+      "outbounds":[
+        "🇭🇰HongKong",
+        "🇹🇼TaiWan",
+        "🇸🇬Singapore",
+        "🇯🇵Japan",
+        "🇰🇷South Korea",
+        "🇺🇸US",
+        "Others"
+      ],
+      "default": "🇸🇬Singapore"
+    },
+    {
+      "tag":"🔍AI Platform",
+      "type":"selector",
+      "interrupt_exist_connections":true,
+      "outbounds":[
+        "🇭🇰HongKong",
+        "🇹🇼TaiWan",
+        "🇸🇬Singapore",
+        "🇯🇵Japan",
+        "🇰🇷South Korea",
+        "🇺🇸US",
+        "Others"
+      ],
+      "default": "🇺🇸US"
+    },
+    {
+      "tag":"📖Wikipedia",
+      "type":"selector",
+      "interrupt_exist_connections":true,
+      "outbounds":[
+        "🇭🇰HongKong",
+        "🇹🇼TaiWan",
+        "🇸🇬Singapore",
+        "🇯🇵Japan",
+        "🇰🇷South Korea",
+        "🇺🇸US",
+        "Others"
+      ],
+      "default": "🇸🇬Singapore"
+    },
+    {
+      "tag":"🗼Pixiv",
+      "type":"selector",
+      "interrupt_exist_connections":true,
+      "outbounds":[
+        "🇭🇰HongKong",
+        "🇹🇼TaiWan",
+        "🇸🇬Singapore",
+        "🇯🇵Japan",
+        "🇰🇷South Korea",
+        "🇺🇸US",
+        "Others"
+      ],
+      "default": "🇺🇸US"
+    },
+    {
+      "tag":"💲支付平台",
+      "type":"selector",
+      "interrupt_exist_connections":true,
+      "outbounds":[
+        "🇭🇰HongKong",
+        "🇹🇼TaiWan",
+        "🇸🇬Singapore",
+        "🇯🇵Japan",
+        "🇰🇷South Korea",
+        "🇺🇸US",
+        "Others"
+      ],
+      "default": "🇺🇸US"
+    },
+    {
+     "tag":"🔚Final",
+     "type":"selector",
+     "interrupt_exist_connections":true,
+     "outbounds":[
+        "🇭🇰HongKong",
+        "🇹🇼TaiWan",
+        "🇸🇬Singapore",
+        "🇯🇵Japan",
+        "🇰🇷South Korea",
+        "🇺🇸US",
+        "Others"
+      ]
+    },
+    {
+      "tag":"🇭🇰HongKong",
+      "type":"selector",
+      "interrupt_exist_connections":true,
+      "outbounds":[
+        "{all}"
+      ],
+      "filter":[
+        {"action":"include","keywords":["🇭🇰|HK|hk|香港|港|HongKong"]}
+      ]
+    },
+    {
+      "tag":"🇹🇼TaiWan",
+      "type":"selector",
+      "interrupt_exist_connections":true,
+      "outbounds":[
+        "{all}"
+      ],
+      "filter":[
+        {"action":"include","keywords":["🇹🇼|TW|tw|台湾|臺灣|台|Taiwan"]}
+      ]
+    },
+    {
+      "tag":"🇸🇬Singapore",
+      "type":"selector",
+      "interrupt_exist_connections":true,
+      "outbounds":[
+        "{all}"
+      ],
+      "filter":[
+        {"action":"include","keywords":["🇸🇬|SG|sg|新加坡|狮|Singapore"]}
+      ]
+    },
+    {
+      "tag":"🇯🇵Japan",
+      "type":"selector",
+      "interrupt_exist_connections":true,
+      "outbounds":[
+        "{all}"
+      ],
+      "filter":[
+        {"action":"include","keywords":["🇯🇵|JP|jp|日本|东京|日|Japan"]}
+      ]
+    },
+    {
+      "tag":"🇺🇸US",
+      "type":"selector",
+      "interrupt_exist_connections":true,
+      "outbounds":[
+        "{all}"
+      ],
+      "filter":[
+        {"action":"include","keywords":["🇺🇸|US|us|美国|凤凰城|西雅图|美|United States|America"]}
+      ]
+    },
+    {
+      "tag":"🇰🇷South Korea",
+      "type":"selector",
+      "interrupt_exist_connections":true,
+      "outbounds":[
+        "{all}"
+      ],
+      "filter":[
+        {"action":"include","keywords":["🇰🇷|KR|kt|韩国|韩|首尔|South Korea|Korea"]}
+      ]
+    },
+    {
+      "tag":"Others",
+      "type":"selector",
+      "interrupt_exist_connections":true,
+      "outbounds":[
+        "{all}"
+      ],
+      "filter":[
+        {"action":"exclude","keywords":["🇭🇰|HK|hk|香港|香|🇹🇼|TW|tw|台湾|台|🇸🇬|SG|sg|新加坡|狮|🇯🇵|JP|jp|日本|东京|日|🇺🇸|US|凤凰城|西雅图|us|美国|美|America|🇰🇷|KR|kt|韩国|韩|South Korea|Korea|网站|地址|剩余|过期|时间|有效|官网|群|邀请|返利|循环|客服|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|频道|无法|说明|使用|提示|特别|访问|支持|教程|关注|更新|作者|加入"]}
+      ]
+    },
+    {
+      "tag":"Global",
+      "type":"selector",
+      "interrupt_exist_connections":true,
+      "outbounds":[ 
+        "auto",
+        "{all}",
+        "direct"
+      ]
+    },
+    {
+      "tag":"auto",
+      "type":"urltest",
+      "interrupt_exist_connections":true,
+      "outbounds":[
+        "{all}"
+      ],
+      "filter":[
+        {"action":"exclude","keywords":["网站|地址|剩余|过期|时间|有效|官网|群|邀请|返利|循环|客服|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|频道|无法|说明|使用|提示|特别|访问|支持|教程|关注|更新|作者|加入"]}
+      ],
+      "url": "http://www.gstatic.com/generate_204",
+      "interval": "0",
+      "idle_timeout": "300s",
+      "tolerance": 50
+    },
+    {
+      "type": "direct",
+      "tag": "direct"
+    }
+  ],
+"route": {
+    "default_domain_resolver":{
+      "server": "local",
+      "strategy": "prefer_ipv4"
+    },
+    "auto_detect_interface": true,
+    "override_android_vpn": true,
+    "final": "🔚Final",
+    "rules": [
+      {
+        "action": "sniff",
+        "sniffer": [
+          "dns",
+          "http",
+          "tls",
+          "quic",
+          "ntp",
+          "stun",
+          "dtls"
+        ],
+        "timeout": "300ms"
+      },
+      {
+       "action": "hijack-dns",
+       "protocol": "dns"
+      },
+      {
+        "action": "route",
+        "network": "icmp",
+        "outbound": "direct"
+      },
+      {
+        "action": "route",
+        "clash_mode":"Direct",
+        "outbound": "direct"
+      },
+      {
+        "action": "route",
+        "clash_mode":"Global",
+        "outbound": "Global"
+      },
+      {
+        "action": "reject",
+        "method": "drop",
+        "rule_set":["geosite-category-ads-all","geosite-category-public-tracker"]
+      },
+      {
+        "action": "route",
+        "rule_set":["geoip-google","geosite-google","geosite-github","geosite-googleplay"],
+        "outbound":"🌐Google"
+      },
+      {
+        "action": "route",
+        "rule_set": ["geoip-telegram","geosite-telegram"],
+        "outbound":"💬Telegram"
+      },
+      {
+        "action": "route",
+        "rule_set":["geosite-mastercard","geosite-paypal","geosite-visa"],
+        "outbound":"💲支付平台"
+      },
+      {
+        "action": "route",
+        "rule_set":"geosite-wikipedia",
+        "outbound":"📖Wikipedia"
+      },
+      {
+        "action": "route",
+        "rule_set":"geosite-category-ai-!cn",
+        "outbound":"🔍AI Platform"
+      },
+      {
+        "action": "route",
+        "rule_set":"geosite-pixiv",
+        "outbound":"🗼Pixiv"
+      },
+      {
+        "action": "route",
+        "rule_set":["geosite-cn","geoip-cn"],
+        "outbound":"direct"
+      },
+      {
+        "action": "route",
+        "ip_is_private":true,
+        "outbound":"direct"
+      }
+    ],
+  "rule_set": [
+      {
+        "tag":"geosite-category-ads-all",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://testingcf.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set-unstable/geosite-category-ads-all.srs",
+        "download_detour": "direct"
+      },
+      {
+        "tag":"geosite-category-public-tracker",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://testingcf.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set-unstable/geosite-category-public-tracker.srs",
+        "download_detour": "direct"
+      },
+      {
+        "tag": "geoip-google",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo-lite/geoip/google.srs",
+        "download_detour": "direct"
+      },
+      {
+        "tag": "geosite-google",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://testingcf.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set-unstable/geosite-google.srs",
+        "download_detour": "direct"
+      },
+      {
+        "tag": "geosite-paypal",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://testingcf.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set-unstable/geosite-paypal.srs",
+        "download_detour": "direct"
+      },
+      {
+        "tag": "geosite-visa",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://testingcf.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set-unstable/geosite-visa.srs",
+        "download_detour": "direct"
+      },
+      {
+        "tag": "geosite-mastercard",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://testingcf.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set-unstable/geosite-mastercard.srs",
+        "download_detour": "direct"
+      },
+      {
+        "tag": "geosite-wikipedia",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://testingcf.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set-unstable/geosite-wikipedia.srs",
+        "download_detour": "direct"
+      },
+      {
+        "tag": "geosite-pixiv",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://testingcf.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set-unstable/geosite-pixiv.srs",
+        "download_detour": "direct"
+      },
+      {
+        "tag": "geosite-googleplay",
+        "type": "remote",
+        "format": "binary",
+        "url":"https://testingcf.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set-unstable/geosite-google-play@cn.srs",
+        "download_detour": "direct"
+      },
+      {
+        "tag": "geosite-github",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://testingcf.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set-unstable/geosite-github.srs",
+        "download_detour": "direct"
+      },
+      {
+        "tag": "geoip-telegram",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo-lite/geoip/telegram.srs",
+        "download_detour": "direct"
+      },
+      {
+        "tag": "geosite-telegram",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://testingcf.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set-unstable/geosite-telegram.srs",
+        "download_detour": "direct"
+      },
+      {
+        "tag": "geosite-category-ai-!cn",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://testingcf.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set-unstable/geosite-category-ai-!cn.srs",
+        "download_detour": "direct"
+      },
+      {
+        "tag": "geoip-cn",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://testingcf.jsdelivr.net/gh/SagerNet/sing-geoip@rule-set/geoip-cn.srs",
+        "download_detour": "direct"
+      },
+      {
+        "tag": "geosite-cn",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://testingcf.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set-unstable/geosite-cn.srs",
+        "download_detour": "direct"
+      }
+    ]
+  }
+}
