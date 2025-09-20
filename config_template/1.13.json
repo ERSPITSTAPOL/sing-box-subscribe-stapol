@@ -267,7 +267,7 @@
       "strategy": "prefer_ipv4"
     },
     "auto_detect_interface": true,
-    "override_android_vpn": true,
+    "override_android_vpn": false,
     "final": "Final",
     "rules": [
       {
