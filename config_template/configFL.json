@@ -45,7 +45,7 @@
       {
         "action":"reject",
         "method": "drop",
-        "rule_set":["geosite-category-ads-all","geosite-category-public-tracker"]
+        "rule_set": "geosite-category-ads-all"
       },
       {
         "action": "route",
@@ -154,7 +154,7 @@
         "🇺🇸US",
         "Others"
       ],
-      "default": "🇯🇵Japan"
+      "default": "🇺🇸US"
     },
     {
       "tag":"💲支付平台",
@@ -336,7 +336,7 @@
       {
         "action": "reject",
         "method": "drop",
-        "rule_set":["geosite-category-ads-all","geosite-category-public-tracker"]
+        "rule_set": "geosite-category-ads-all"
       },
       {
         "action": "route",
@@ -385,13 +385,6 @@
         "type": "remote",
         "format": "binary",
         "url": "https://testingcf.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set-unstable/geosite-category-ads-all.srs",
-        "download_detour": "direct"
-      },
-      {
-        "tag":"geosite-category-public-tracker",
-        "type": "remote",
-        "format": "binary",
-        "url": "https://testingcf.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set-unstable/geosite-category-public-tracker.srs",
         "download_detour": "direct"
       },
       {
