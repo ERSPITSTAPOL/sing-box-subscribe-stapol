@@ -38,11 +38,6 @@
         "server":"remote"
       },
       {
-        "action": "route",
-        "rule_set":"geosite-googleplay",
-        "server":"remote"
-      },
-      {
         "action":"reject",
         "method": "drop",
         "rule_set": "geosite-category-ads-all"
@@ -92,7 +87,7 @@
         "🇸🇬Singapore",
         "🇯🇵Japan",
         "🇰🇷South Korea",
-        "🇺🇸America",
+        "🇺🇸United States",
         "Others"
       ]
     },
@@ -106,7 +101,7 @@
         "🇸🇬Singapore",
         "🇯🇵Japan",
         "🇰🇷South Korea",
-        "🇺🇸America",
+        "🇺🇸United States",
         "Others"
       ]
     },
@@ -120,7 +115,7 @@
         "🇸🇬Singapore",
         "🇯🇵Japan",
         "🇰🇷South Korea",
-        "🇺🇸America",
+        "🇺🇸United States",
         "Others"
       ],
       "default": "🇸🇬Singapore"
@@ -135,7 +130,7 @@
         "🇸🇬Singapore",
         "🇯🇵Japan",
         "🇰🇷South Korea",
-        "🇺🇸America",
+        "🇺🇸United States",
         "Others"
       ]
     },
@@ -149,10 +144,10 @@
         "🇸🇬Singapore",
         "🇯🇵Japan",
         "🇰🇷South Korea",
-        "🇺🇸America",
+        "🇺🇸United States",
         "Others"
       ],
-      "default": "🇺🇸America"
+      "default": "🇺🇸United States"
     },
     {
       "tag":"🇭🇰HongKong",
@@ -199,7 +194,7 @@
       ]
     },
     {
-      "tag":"🇺🇸America",
+      "tag":"🇺🇸United States",
       "type":"selector",
       "interrupt_exist_connections":true,
       "outbounds":[
@@ -309,7 +304,7 @@
       },
       {
         "action": "route",
-        "rule_set":["geoip-google","geosite-google","geosite-github","geosite-googleplay"],
+        "rule_set":["geoip-google","geosite-google","geosite-github"],
         "outbound":"Google"
       },
       {
@@ -358,13 +353,6 @@
         "type": "remote",
         "format": "binary",
         "url": "https://testingcf.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set-unstable/geosite-google.srs",
-        "download_detour": "direct"
-      },
-      {
-        "tag": "geosite-googleplay",
-        "type": "remote",
-        "format": "binary",
-        "url":"https://testingcf.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set-unstable/geosite-google-play@cn.srs",
         "download_detour": "direct"
       },
       {
