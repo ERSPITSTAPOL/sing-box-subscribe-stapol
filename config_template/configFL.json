@@ -38,11 +38,6 @@
         "server":"remote"
       },
       {
-        "action": "route",
-        "rule_set":"geosite-googleplay",
-        "server":"remote"
-      },
-      {
         "action":"reject",
         "method": "drop",
         "rule_set": "geosite-category-ads-all"
@@ -92,7 +87,7 @@
         "🇸🇬Singapore",
         "🇯🇵Japan",
         "🇰🇷South Korea",
-        "🇺🇸US",
+        "🇺🇸United States",
         "Others"
       ]
     },
@@ -106,7 +101,7 @@
         "🇸🇬Singapore",
         "🇯🇵Japan",
         "🇰🇷South Korea",
-        "🇺🇸US",
+        "🇺🇸United States",
         "Others"
       ],
       "default": "🇸🇬Singapore"
@@ -121,10 +116,10 @@
         "🇸🇬Singapore",
         "🇯🇵Japan",
         "🇰🇷South Korea",
-        "🇺🇸US",
+        "🇺🇸United States",
         "Others"
       ],
-      "default": "🇺🇸US"
+      "default": "🇺🇸United States"
     },
     {
       "tag":"📖Wikipedia",
@@ -136,7 +131,7 @@
         "🇸🇬Singapore",
         "🇯🇵Japan",
         "🇰🇷South Korea",
-        "🇺🇸US",
+        "🇺🇸United States",
         "Others"
       ],
       "default": "🇸🇬Singapore"
@@ -151,7 +146,7 @@
         "🇸🇬Singapore",
         "🇯🇵Japan",
         "🇰🇷South Korea",
-        "🇺🇸US",
+        "🇺🇸United States",
         "Others"
       ],
       "default": "🇯🇵Japan"
@@ -166,10 +161,10 @@
         "🇸🇬Singapore",
         "🇯🇵Japan",
         "🇰🇷South Korea",
-        "🇺🇸US",
+        "🇺🇸United States",
         "Others"
       ],
-      "default": "🇺🇸US"
+      "default": "🇺🇸United States"
     },
     {
      "tag":"🔚Final",
@@ -181,7 +176,7 @@
         "🇸🇬Singapore",
         "🇯🇵Japan",
         "🇰🇷South Korea",
-        "🇺🇸US",
+        "🇺🇸United States",
         "Others"
       ]
     },
@@ -230,7 +225,7 @@
       ]
     },
     {
-      "tag":"🇺🇸US",
+      "tag":"🇺🇸United States",
       "type":"selector",
       "interrupt_exist_connections":true,
       "outbounds":[
@@ -340,7 +335,7 @@
       },
       {
         "action": "route",
-        "rule_set":["geoip-google","geosite-google","geosite-github","geosite-googleplay"],
+        "rule_set":["geoip-google","geosite-google"],
         "outbound":"🌐Google"
       },
       {
@@ -427,20 +422,6 @@
         "type": "remote",
         "format": "binary",
         "url": "https://testingcf.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set-unstable/geosite-pixiv.srs",
-        "download_detour": "direct"
-      },
-      {
-        "tag": "geosite-googleplay",
-        "type": "remote",
-        "format": "binary",
-        "url":"https://testingcf.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set-unstable/geosite-google-play@cn.srs",
-        "download_detour": "direct"
-      },
-      {
-        "tag": "geosite-github",
-        "type": "remote",
-        "format": "binary",
-        "url": "https://testingcf.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set-unstable/geosite-github.srs",
         "download_detour": "direct"
       },
       {
