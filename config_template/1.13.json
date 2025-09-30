@@ -14,13 +14,14 @@
       {
         "tag":"remote",
         "type":"tcp",
-        "server":"1.1.1.1",
+        "server":"8.8.8.8",
         "detour":"Final"
       },
       {
         "tag":"local",
         "type":"h3",
         "server_port":443,
+        "path": "/dns-query",
         "tls": {"enabled": true},
         "server":"223.5.5.5"
       }
@@ -212,7 +213,7 @@
         "{all}"
       ],
       "filter":[
-        {"action":"include","keywords":["🇰🇷|KR|kt|韩国|韩|首尔|South Korea|Korea"]}
+        {"action":"include","keywords":["🇰🇷|KR|kt|韩国|韩|首尔|ROK|South Korea|Korea"]}
       ]
     },
     {
@@ -262,6 +263,10 @@
     "override_android_vpn": false,
     "final": "Final",
     "rules": [
+      {
+        "action": "hijack-dns",
+        "port": 53
+      },
       {
         "action": "sniff",
         "sniffer": [
