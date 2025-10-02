@@ -54,7 +54,8 @@
         "final":"remote",
         "disable_cache":true,
         "disable_expire":false,
-        "independent_cache":false
+        "independent_cache":false,
+        "reverse_mapping": false
   },
  "inbounds": [
     {
