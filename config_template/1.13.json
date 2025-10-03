@@ -336,7 +336,7 @@
         "action": "route",
         "ip_is_private":true,
         "outbound":"direct"
-      }
+      },
       {
         "action": "reject",
         "method": "drop",
