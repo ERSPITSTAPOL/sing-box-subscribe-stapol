@@ -69,6 +69,8 @@
       "stack": "system",
       "auto_route": true,
       "strict_route": true,
+      "endpoint_independent_nat": false,
+      "udp_timeout": "5m",
       "platform": {
         "http_proxy": {
           "enabled": false,
