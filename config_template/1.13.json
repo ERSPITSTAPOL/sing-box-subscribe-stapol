@@ -19,7 +19,7 @@
       },
       {
         "tag":"local",
-        "type":"h3",
+        "type":"https",
         "server_port":443,
         "path": "/dns-query",
         "tls": {"enabled": true},
