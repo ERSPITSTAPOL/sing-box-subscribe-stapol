@@ -19,7 +19,7 @@
       },
       {
         "tag":"local",
-        "type":"https",
+        "type":"h3",
         "server_port":443,
         "path": "/dns-query",
         "tls": {"enabled": true},
@@ -257,7 +257,7 @@
       "tag": "direct"
     }
   ],
-"route": {
+ "route": {
     "default_domain_resolver":{
       "server": "local",
       "strategy": "prefer_ipv4"
@@ -337,8 +337,14 @@
         "ip_is_private":true,
         "outbound":"direct"
       }
+      {
+        "action": "reject",
+        "method": "drop",
+        "ip_cidr": ["224.0.0.0/3","ff00::/8"],
+        "source_ip_cidr": ["224.0.0.0/3","ff00::/8"]
+      }
     ],
-  "rule_set": [
+   "rule_set": [
       {
         "tag":"geosite-category-ads-all",
         "type": "remote",
