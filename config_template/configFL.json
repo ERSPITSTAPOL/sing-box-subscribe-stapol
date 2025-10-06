@@ -19,9 +19,8 @@
       },
       {
         "tag":"local",
-        "type":"h3",
-        "server_port":443,
-        "path": "/dns-query",
+        "type":"quic",
+        "server_port":853,
         "tls": {"enabled": true},
         "server":"223.5.5.5"
       }
