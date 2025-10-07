@@ -18,11 +18,16 @@
         "detour":"Final"
       },
       {
-        "tag":"local",
+        "tag":"ali",
         "type":"quic",
         "server_port":853,
         "tls": {"enabled": true},
         "server":"223.5.5.5"
+      },
+      {
+        "tag": "local",
+        "type": "local",
+        "prefer_go": true
       }
     ],
     "rules":[
@@ -258,7 +263,7 @@
   ],
  "route": {
     "default_domain_resolver":{
-      "server": "local",
+      "server": "ali",
       "strategy": "prefer_ipv4"
     },
     "auto_detect_interface": true,
