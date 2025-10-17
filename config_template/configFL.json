@@ -266,7 +266,7 @@
       ]
     },
     {
-      "tag":"Global",
+      "tag":"🚀Global",
       "type":"selector",
       "interrupt_exist_connections":true,
       "outbounds":[
@@ -331,13 +331,13 @@
       },
       {
         "action": "route",
-        "clash_mode":"Direct",
-        "outbound": "direct"
+        "clash_mode":"Global",
+        "outbound": "🚀Global"
       },
       {
         "action": "route",
-        "clash_mode":"Global",
-        "outbound": "Global"
+        "clash_mode":"Direct",
+        "outbound": "direct"
       },
       {
         "action": "reject",
