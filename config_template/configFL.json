@@ -14,7 +14,7 @@
       {
         "tag":"remote",
         "type":"tcp",
-        "server":"8.8.8.8",
+        "server":"1.1.1.1",
         "detour":"🔚Final"
       },
       {
@@ -27,7 +27,7 @@
       {
         "tag": "local",
         "type": "local",
-        "prefer_go": true
+        "prefer_go": false
       }
     ],
     "rules":[
