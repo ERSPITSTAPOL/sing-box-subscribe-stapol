@@ -96,7 +96,7 @@
         "🇯🇵Japan",
         "🇰🇷South Korea",
         "🇺🇸United States",
-        "Others"
+        "🛰Others"
       ]
     },
     {
@@ -110,7 +110,7 @@
         "🇯🇵Japan",
         "🇰🇷South Korea",
         "🇺🇸United States",
-        "Others"
+        "🛰Others"
       ],
       "default": "🇸🇬Singapore"
     },
@@ -125,7 +125,7 @@
         "🇯🇵Japan",
         "🇰🇷South Korea",
         "🇺🇸United States",
-        "Others"
+        "🛰Others"
       ],
       "default": "🇺🇸United States"
     },
@@ -140,7 +140,7 @@
         "🇯🇵Japan",
         "🇰🇷South Korea",
         "🇺🇸United States",
-        "Others"
+        "🛰Others"
       ],
       "default": "🇸🇬Singapore"
     },
@@ -155,7 +155,7 @@
         "🇯🇵Japan",
         "🇰🇷South Korea",
         "🇺🇸United States",
-        "Others"
+        "🛰Others"
       ],
       "default": "🇯🇵Japan"
     },
@@ -170,7 +170,7 @@
         "🇯🇵Japan",
         "🇰🇷South Korea",
         "🇺🇸United States",
-        "Others"
+        "🛰Others"
       ],
       "default": "🇺🇸United States"
     },
@@ -185,7 +185,7 @@
         "🇯🇵Japan",
         "🇰🇷South Korea",
         "🇺🇸United States",
-        "Others"
+        "🛰Others"
       ]
     },
     {
@@ -255,7 +255,7 @@
       ]
     },
     {
-      "tag":"Others",
+      "tag":"🛰Others",
       "type":"selector",
       "interrupt_exist_connections":true,
       "outbounds":[
