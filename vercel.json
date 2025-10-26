@@ -1,10 +1,10 @@
 {
   "functions": {
     "api/app.py": { "maxDuration": 60 },
-    "api/convert.py": { "maxDuration": 60 }
+    "api/workersapi.py": { "maxDuration": 60 }
   },
   "rewrites": [
-    { "source": "/(.*)", "destination": "/api/workersapi" },
+    { "source": "/convert", "destination": "/api/workersapi" },
     { "source": "/(.*)", "destination": "/api/app" }
   ]
 }
