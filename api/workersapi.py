@@ -1,16 +1,20 @@
-import json
-from urllib.parse import parse_qs
-def convert(request):
-    url = request.args.get("url") or parse_qs(request.query_string).get("url", [None])[0]
+from flask import Flask, request, jsonify
+app = Flask(__name__)
+@app.route("/")
+def index():
+    url = request.args.get("url")
     if not url:
+        return jsonify({"error": "missing ?url="}), 400
+    return jsonify({"url": url, "message": "success"})
+def convert(request):
+    with app.test_request_context(
+        path=request.path,
+        base_url=request.base_url,
+        query_string=request.query_string
+    ):
+        resp = app.full_dispatch_request()
         return {
-            "status": 400,
-            "body": json.dumps({"error": "missing ?url="}),
-            "headers": {"content-type": "application/json"}
+            "status": resp.status_code,
+            "body": resp.get_data(as_text=True),
+            "headers": dict(resp.headers)
         }
-    result = {"url": url, "message": "success"}
-    return {
-        "status": 200,
-        "body": json.dumps(result),
-        "headers": {"content-type": "application/json"}
-    }
