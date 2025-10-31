@@ -95,7 +95,7 @@
         "🇸🇬Singapore",
         "🇯🇵Japan",
         "🇰🇷South Korea",
-        "🇺🇸United States",
+        "🇺🇸America",
         "🛰Others"
       ]
     },
@@ -109,7 +109,7 @@
         "🇸🇬Singapore",
         "🇯🇵Japan",
         "🇰🇷South Korea",
-        "🇺🇸United States",
+        "🇺🇸America",
         "🛰Others"
       ],
       "default": "🇸🇬Singapore"
@@ -124,10 +124,10 @@
         "🇸🇬Singapore",
         "🇯🇵Japan",
         "🇰🇷South Korea",
-        "🇺🇸United States",
+        "🇺🇸America",
         "🛰Others"
       ],
-      "default": "🇺🇸United States"
+      "default": "🇺🇸America"
     },
     {
       "tag":"📖Wikipedia",
@@ -139,7 +139,7 @@
         "🇸🇬Singapore",
         "🇯🇵Japan",
         "🇰🇷South Korea",
-        "🇺🇸United States",
+        "🇺🇸America",
         "🛰Others"
       ],
       "default": "🇸🇬Singapore"
@@ -154,7 +154,7 @@
         "🇸🇬Singapore",
         "🇯🇵Japan",
         "🇰🇷South Korea",
-        "🇺🇸United States",
+        "🇺🇸America",
         "🛰Others"
       ],
       "default": "🇯🇵Japan"
@@ -169,10 +169,10 @@
         "🇸🇬Singapore",
         "🇯🇵Japan",
         "🇰🇷South Korea",
-        "🇺🇸United States",
+        "🇺🇸America",
         "🛰Others"
       ],
-      "default": "🇺🇸United States"
+      "default": "🇺🇸America"
     },
     {
      "tag":"🔚Final",
@@ -184,7 +184,7 @@
         "🇸🇬Singapore",
         "🇯🇵Japan",
         "🇰🇷South Korea",
-        "🇺🇸United States",
+        "🇺🇸America",
         "🛰Others"
       ]
     },
@@ -233,7 +233,7 @@
       ]
     },
     {
-      "tag":"🇺🇸United States",
+      "tag":"🇺🇸America",
       "type":"selector",
       "interrupt_exist_connections":true,
       "outbounds":[
@@ -287,7 +287,7 @@
       "url": "http://www.gstatic.com/generate_204",
       "interval": "300s",
       "idle_timeout": "360s",
-      "tolerance": 50
+      "tolerance": 60
     },
     {
       "type": "direct",
