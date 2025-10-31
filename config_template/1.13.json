@@ -95,7 +95,7 @@
         "🇸🇬Singapore",
         "🇯🇵Japan",
         "🇰🇷South Korea",
-        "🇺🇸USA",
+        "🇺🇸America",
         "🛰Others"
       ]
     },
@@ -109,7 +109,7 @@
         "🇸🇬Singapore",
         "🇯🇵Japan",
         "🇰🇷South Korea",
-        "🇺🇸USA",
+        "🇺🇸America",
         "🛰Others"
       ]
     },
@@ -123,7 +123,7 @@
         "🇸🇬Singapore",
         "🇯🇵Japan",
         "🇰🇷South Korea",
-        "🇺🇸USA",
+        "🇺🇸America",
         "🛰Others"
       ],
       "default": "🇸🇬Singapore"
@@ -138,7 +138,7 @@
         "🇸🇬Singapore",
         "🇯🇵Japan",
         "🇰🇷South Korea",
-        "🇺🇸USA",
+        "🇺🇸America",
         "🛰Others"
       ]
     },
@@ -152,10 +152,10 @@
         "🇸🇬Singapore",
         "🇯🇵Japan",
         "🇰🇷South Korea",
-        "🇺🇸USA",
+        "🇺🇸America",
         "🛰Others"
       ],
-      "default": "🇺🇸USA"
+      "default": "🇺🇸America"
     },
     {
       "tag":"🇭🇰HongKong",
@@ -202,14 +202,14 @@
       ]
     },
     {
-      "tag":"🇺🇸USA",
+      "tag":"🇺🇸America",
       "type":"selector",
       "interrupt_exist_connections":true,
       "outbounds":[
         "{all}"
       ],
       "filter":[
-        {"action":"include","keywords":["🇺🇸|US|us|美国|凤凰城|西雅图|美|United States|America"]}
+        {"action":"include","keywords":["🇺🇸|US|USA|us|美国|凤凰城|西雅图|美|United States|America"]}
       ]
     },
     {
@@ -256,7 +256,7 @@
       "url": "http://www.gstatic.com/generate_204",
       "interval": "300s",
       "idle_timeout": "360s",
-      "tolerance": 50
+      "tolerance": 60
     },
     {
       "type": "direct",
