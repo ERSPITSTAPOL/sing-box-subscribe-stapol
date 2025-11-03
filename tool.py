@@ -1,6 +1,5 @@
 import base64,requests,random,string,re,chardet,urllib.parse
 import warnings
-from urllib3.exceptions import InsecureRequestWarning
 from cryptography.utils import CryptographyDeprecationWarning
 with warnings.catch_warnings(action="ignore", category=CryptographyDeprecationWarning):
     import paramiko
@@ -159,7 +158,6 @@ regex_patterns = {
     '🇦🇶': re.compile(r'南极|南極|(\s|-)?AQ\d*|Antarctica'),
     '🇨🇳': re.compile(r'中国|中國|江苏|北京|上海|广州|深圳|杭州|徐州|青岛|宁波|镇江|沈阳|济南|回国|back|(\s|-)?CN(?!2GIA)\d*|China'),
 }
-
 def rename(input_str):
     for country_code, pattern in regex_patterns.items():
         if input_str.startswith(country_code):
@@ -293,20 +291,17 @@ def getResponse(url, custom_user_agent=None):
     response = None
     headers = {
         'User-Agent': custom_user_agent if custom_user_agent else 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Safari/605.1.15'
-      #  'User-Agent': 'clash.meta'
+        #'User-Agent': 'clash.meta'
     }
-    ignore_ssl = bool(re.search(r'([?&])igssl\b', url, flags=re.IGNORECASE))
-    if ignore_ssl:
-        warnings.simplefilter('ignore', InsecureRequestWarning)
     try:
-        response = requests.get(url, headers=headers, timeout=5000, verify=not ignore_ssl)
-        if response.status_code == 200:
+        response = requests.get(url,headers=headers,timeout=5000)
+        if response.status_code==200:
             return response
         else:
             return None
     except:
         return None
-                                    
+    
 class ConfigSSH:
     server = {'ip':None,'port':22,'user':None,'password':''}
     def __init__(self,server:dict) -> None:
