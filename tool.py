@@ -295,17 +295,18 @@ def getResponse(url, custom_user_agent=None):
         'User-Agent': custom_user_agent if custom_user_agent else 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Safari/605.1.15'
       #  'User-Agent': 'clash.meta'
     }
-    if re.search(r'([?&])igssl\b', url, flags=re.IGNORECASE):
+    ignore_ssl = bool(re.search(r'([?&])igssl\b', url, flags=re.IGNORECASE))
+    if ignore_ssl:
         warnings.simplefilter('ignore', InsecureRequestWarning)
     try:
-        response = requests.get(url, headers=headers, timeout=5000)
+        response = requests.get(url, headers=headers, timeout=5000, verify=not ignore_ssl)
         if response.status_code == 200:
             return response
         else:
             return None
     except:
         return None
-                            
+                                    
 class ConfigSSH:
     server = {'ip':None,'port':22,'user':None,'password':''}
     def __init__(self,server:dict) -> None:
