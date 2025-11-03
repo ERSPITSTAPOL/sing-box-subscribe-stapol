@@ -1,5 +1,6 @@
 import base64,requests,random,string,re,chardet,urllib.parse
 import warnings
+from urllib3.exceptions import InsecureRequestWarning
 from cryptography.utils import CryptographyDeprecationWarning
 with warnings.catch_warnings(action="ignore", category=CryptographyDeprecationWarning):
     import paramiko
@@ -158,6 +159,7 @@ regex_patterns = {
     '🇦🇶': re.compile(r'南极|南極|(\s|-)?AQ\d*|Antarctica'),
     '🇨🇳': re.compile(r'中国|中國|江苏|北京|上海|广州|深圳|杭州|徐州|青岛|宁波|镇江|沈阳|济南|回国|back|(\s|-)?CN(?!2GIA)\d*|China'),
 }
+
 def rename(input_str):
     for country_code, pattern in regex_patterns.items():
         if input_str.startswith(country_code):
@@ -245,7 +247,6 @@ def filterNodes(nodelist,keywords):
             newlist.append(node)
         else:
             print('过滤节点名称 '+node['name'])
-            print('Lọc tên proxy'+node['name'])
     return newlist
 
 def replaceStr(nodelist,keywords):
@@ -280,9 +281,7 @@ def removeNodes(nodelist):
             temp_list.append(_node)
             newlist.append(node)
     print('去除了 '+str(i)+' 个重复节点')
-    print('Đã xóa các proxy trùng lặp '+str(i))
     print('实际获取 '+str(len(newlist))+' 个节点')
-    print('Thực tế nhận được '+str(len(newlist))+' proxy')
     return newlist
 
 def prefixStr(nodelist,prestr):
@@ -290,32 +289,23 @@ def prefixStr(nodelist,prestr):
         node['name'] = prestr+node['name'].strip()
     return nodelist
 
-def getResponse(url):
+def getResponse(url, custom_user_agent=None):
+    response = None
     headers = {
         'User-Agent': custom_user_agent if custom_user_agent else 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Safari/605.1.15'
       #  'User-Agent': 'clash.meta'
     }
-    ignore_ssl = False
     if re.search(r'([?&])igssl\b', url, flags=re.IGNORECASE):
-        ignore_ssl = True
-        url = re.sub(r'([?&])igssl\b', '', url, flags=re.IGNORECASE)
-        url = re.sub(r'\?&', '?', url)
-        url = re.sub(r'&&', '&', url)
-        url = url.rstrip('?&')
+        warnings.simplefilter('ignore', InsecureRequestWarning)
     try:
-        response = requests.get(
-            url,
-            headers=headers,
-            timeout=5000,
-            verify=not ignore_ssl
-        )
+        response = requests.get(url, headers=headers, timeout=5000)
         if response.status_code == 200:
             return response
         else:
             return None
     except:
         return None
-                    
+                            
 class ConfigSSH:
     server = {'ip':None,'port':22,'user':None,'password':''}
     def __init__(self,server:dict) -> None:
