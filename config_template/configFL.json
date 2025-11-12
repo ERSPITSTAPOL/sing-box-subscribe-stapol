@@ -325,9 +325,9 @@
        "protocol": "dns"
       },
       {
-        "action": "route",
-        "network": "icmp",
-        "outbound": "direct"
+        "action":"reject",
+        "method": "drop",
+        "network": "icmp"
       },
       {
         "action": "route",
