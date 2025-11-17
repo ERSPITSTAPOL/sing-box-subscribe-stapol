@@ -66,10 +66,7 @@
       "tag": "tun-in",
       "type": "tun",
       "mtu": 9000,
-      "address": [
-        "172.19.0.0/30",
-        "fdfe:dcba:9876::0/126"
-      ],
+      "address": ["172.19.0.0/30","fdfe:dcba:9876::1/126"],
       "stack": "system",
       "auto_route": true,
       "strict_route": true,
@@ -209,7 +206,7 @@
         "{all}"
       ],
       "filter":[
-        {"action":"include","keywords":["🇺🇸|US|USA|us|美国|凤凰城|西雅图|美|United States|America"]}
+        {"action":"include","keywords":["🇺🇸|US|USA|美国|美|United States|America"]}
       ]
     },
     {
@@ -231,7 +228,7 @@
         "{all}"
       ],
       "filter":[
-        {"action":"exclude","keywords":["🇭🇰|HK|hk|香港|香|🇹🇼|TW|tw|台湾|台|🇸🇬|SG|sg|新加坡|狮|🇯🇵|JP|jp|日本|东京|日|🇺🇸|US|凤凰城|西雅图|us|美国|美|America|🇰🇷|KR|kt|韩国|韩|South Korea|Korea|群|邀请|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|特别|访问|支持|教程|关注|更新|作者|加入|续费|更多|客户端|官方"]}
+        {"action":"exclude","keywords":["🇭🇰|HK|hk|香港|香|🇹🇼|TW|tw|台湾|台|🇸🇬|SG|sg|新加坡|狮|🇯🇵|JP|jp|日本|东京|日|🇺🇸|US|美国|美|America|🇰🇷|KR|kt|韩国|韩|South Korea|Korea|群|邀请|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|特别|访问|支持|教程|关注|更新|作者|加入|续费|更多|客户端|官方"]}
       ]
     },
     {
@@ -274,6 +271,7 @@
     "rules": [
       {
         "action": "hijack-dns",
+        "source_ip_cidr": ["172.19.0.0/30","fdfe:dcba:9876::1/126"],
         "port": 53
       },
       {
