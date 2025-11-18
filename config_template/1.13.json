@@ -271,7 +271,6 @@
     "rules": [
       {
         "action": "hijack-dns",
-        "source_ip_cidr": ["172.19.0.0/30","fdfe:dcba:9876::1/126"],
         "port": 53
       },
       {
