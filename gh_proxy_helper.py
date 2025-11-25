@@ -1,4 +1,6 @@
 import re
+from urllib.parse import parse_qs, urlparse, urlencode, urlunparse, quote, unquote
+
 def set_gh_proxy(config, gh="1"):
     proxy_methods = [
         ("gh-proxy", "https://gh-proxy.com/"),
@@ -72,9 +74,22 @@ def set_gh_proxy(config, gh="1"):
             original
         )
 
+    def process_url(full_url):
+        parsed = urlparse(full_url)
+        qs = parse_qs(parsed.query)
+
+        if "file" in qs:
+            original_file = unquote(qs["file"][0])
+            converted_file = apply_proxy(original_file)
+            qs["file"] = [quote(converted_file, safe=":/@")]
+            new_query = urlencode(qs, doseq=True)
+            return urlunparse(parsed._replace(query=new_query))
+        else:
+            return apply_proxy(full_url)
+
     if isinstance(config, str):
-        return apply_proxy(config)
+        return process_url(config)
     elif isinstance(config, list):
-        return [apply_proxy(line) for line in config]
+        return [process_url(url) for url in config]
     else:
         raise TypeError("config 应该是字符串或字符串列表")
