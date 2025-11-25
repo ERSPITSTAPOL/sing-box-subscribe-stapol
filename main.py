@@ -561,14 +561,23 @@ if __name__ == '__main__':
         config = load_json(config_template_path)
     nodes = process_subscribes(providers["subscribes"])
 
-    # 处理github加速
-    if hasattr(args, 'gh_proxy_index') and str(args.gh_proxy_index).isdigit():
-        gh_proxy_index = int(args.gh_proxy_index)
-        print(gh_proxy_index)
+# 处理github加速
+if hasattr(args, 'gh_proxy_index'):
+    gh_param_value = str(args.gh_proxy_index).strip()
+    
+    if gh_param_value: 
+        print(f"DEBUG: 接收到的加速参数值: {gh_param_value}")
+        
         urls = [item["url"] for item in config["route"]["rule_set"]]
-        new_urls = set_gh_proxy(urls, gh_proxy_index)
+        
+        new_urls = set_gh_proxy(urls, gh_param_value) 
+        
         for item, new_url in zip(config["route"]["rule_set"], new_urls):
             item["url"] = new_url
+    else:
+        print("警告: 接收到的 gh_proxy_index 值为空，跳过加速处理。")
+else:
+    print("通知: 未检测到 gh_proxy_index 参数，跳过 GitHub 加速处理。")
 
     if providers.get('Only-nodes'):
         combined_contents = []
