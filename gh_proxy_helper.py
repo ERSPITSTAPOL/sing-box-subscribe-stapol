@@ -1,7 +1,6 @@
 import re
 
 def set_gh_proxy(config, selected_index=0):
-
     proxy_methods = [
         ("gh-proxy.com", "https://gh-proxy.com/"),
         ("cnxiaobai",    "https://github.cnxiaobai.com/"),
@@ -39,14 +38,16 @@ def set_gh_proxy(config, selected_index=0):
             return line
 
         jsdelivr_pattern = (
-            r'https://(?:cdn|testingcf|fastly)\.jsdelivr\.net'
+            r'(?:https://(?:cdn|testingcf|fastly)\.jsdelivr\.net)'
             r'/gh/([^/]+)/([^@]+)@([^/]+)/(.*)'
         )
-        match = re.match(jsdelivr_pattern, line)
-        if match:
-            user, repo, branch, path = match.groups()
-            return f"{raw_prefix}{user}/{repo}/{branch}/{path}"
-
+        raw_sub = r'https://raw.githubusercontent.com/\1/\2/\3/\4'
+        
+        new_line, count = re.subn(jsdelivr_pattern, raw_sub, line)
+        
+        if count > 0:
+            return new_line
+        
         for _, prefix in proxy_methods:
             check_prefix = prefix if prefix.endswith('/') else prefix + '/'
             
