@@ -13,69 +13,53 @@ def set_gh_proxy(config, gh="1"):
     ]
 
     if gh.isdigit():
-        selected_index = int(gh) - 1
-        if not (0 <= selected_index < len(proxy_methods)):
+        index = int(gh) - 1
+        if not (0 <= index < len(proxy_methods)):
             raise ValueError(f"gh 数字索引超出范围: {gh}")
-        selected_name, selected_prefix = proxy_methods[selected_index]
+        selected_prefix = proxy_methods[index][1]
     else:
         for name, prefix in proxy_methods:
             if name == gh:
-                selected_name, selected_prefix = name, prefix
+                selected_prefix = prefix
                 break
         else:
             raise ValueError(f"未知 GitHub 加速名称: {gh}")
 
-    all_prefixes = [prefix for _, prefix in proxy_methods]
+    jsdelivr_pattern = re.compile(
+        r'https://(?:cdn\.jsdelivr\.net|testingcf\.jsdelivr\.net|fastly\.jsdelivr\.net)/gh/([^/]+)/([^@]+)@([^/]+)/(.*)'
+    )
 
-    def restore_raw_url(line):
-        jsdelivr_pattern = (
-            r'https://(?:cdn\.jsdelivr\.net|testingcf\.jsdelivr\.net|fastly\.jsdelivr\.net)'
-            r'/gh/([^/]+)/([^@]+)@([^/]+)/(.*)'
-        )
-        match = re.match(jsdelivr_pattern, line)
-        if match:
-            user, repo, branch, path = match.groups()
+    def restore_raw_url(url):
+        m = jsdelivr_pattern.match(url)
+        if m:
+            user, repo, branch, path = m.groups()
             return f"https://raw.githubusercontent.com/{user}/{repo}/{branch}/{path}"
-
-        for prefix in all_prefixes:
-            if line.startswith(prefix):
-                if selected_prefix in ("https://cdn.jsdelivr.net", "https://testingcf.jsdelivr.net", "https://fastly.jsdelivr.net") \
-                   and "raw.githubusercontent.com" not in line:
-                    return line
-                return line.replace(prefix, selected_prefix, 1)
-        return line
+        for _, prefix in proxy_methods:
+            if url.startswith(prefix):
+                if prefix.startswith("https://cdn") or prefix.startswith("https://testingcf") or prefix.startswith("https://fastly"):
+                    return url
+                return url.replace(prefix, "https://raw.githubusercontent.com/", 1)
+        return url
 
     def convert_to_jsdelivr(raw_url, domain):
-        match = re.match(r'https://raw\.githubusercontent\.com/([^/]+)/([^/]+)/([^/]+)/(.*)', raw_url)
-        if match:
-            user, repo, branch, path = match.groups()
+        m = re.match(r'https://raw\.githubusercontent\.com/([^/]+)/([^/]+)/([^/]+)/(.*)', raw_url)
+        if m:
+            user, repo, branch, path = m.groups()
             return f"https://{domain}/gh/{user}/{repo}@{branch}/{path}"
         return raw_url
 
-    def apply_proxy(line):
-        original = restore_raw_url(line)
-
+    def apply_proxy(url):
+        original = restore_raw_url(url)
         if selected_prefix in ("https://cdn.jsdelivr.net", "https://testingcf.jsdelivr.net", "https://fastly.jsdelivr.net"):
             if "raw.githubusercontent.com" not in original:
                 return original
-
-            if selected_prefix == "https://cdn.jsdelivr.net":
-                domain = "cdn.jsdelivr.net"
-            elif selected_prefix == "https://testingcf.jsdelivr.net":
-                domain = "testingcf.jsdelivr.net"
-            else:
-                domain = "fastly.jsdelivr.net"
+            domain = selected_prefix.replace("https://", "")
             return convert_to_jsdelivr(original, domain)
-        return re.sub(
-            r'^https://raw\.githubusercontent\.com/',
-            selected_prefix + 'raw.githubusercontent.com/',
-            original
-        )
+        return re.sub(r'^https://raw\.githubusercontent\.com/', selected_prefix + 'raw.githubusercontent.com/', original)
 
     def process_url(full_url):
         parsed = urlparse(full_url)
         qs = parse_qs(parsed.query)
-
         if "file" in qs:
             original_file = unquote(qs["file"][0])
             if original_file.startswith("https:/") and not original_file.startswith("https://"):
@@ -90,6 +74,6 @@ def set_gh_proxy(config, gh="1"):
     if isinstance(config, str):
         return process_url(config)
     elif isinstance(config, list):
-        return [process_url(url) for url in config]
+        return [process_url(u) for u in config]
     else:
         raise TypeError("config 应该是字符串或字符串列表")
