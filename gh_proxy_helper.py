@@ -3,14 +3,30 @@ import re
 def set_gh_proxy(config, selected_index=0):
 
     proxy_methods = [
-        ("gh-proxy.com", "https://gh-proxy.com/"),
-        ("gh.sageer.me", "https://gh.sageer.me/"),
-        ("ghproxy.com", "https://ghproxy.com/"),
-        ("mirror.ghproxy.com", "https://mirror.ghproxy.com/"),
-        ("jsDelivr", "jsdelivr"),
-        ("jsDelivr CF", "testingcf.jsdelivr.net"),
-        ("jsDelivr Fastly", "fastly.jsdelivr.net"),
+        ("gh-proxy.com", "https://gh-proxy.com/"),       # Index 0
+        ("gh.sageer.me", "https://gh.sageer.me/"),       # Index 1
+        ("ghproxy.com", "https://ghproxy.com/"),         # Index 2
+        ("mirror.ghproxy.com", "https://mirror.ghproxy.com/"), # Index 3
+        ("jsDelivr", "jsdelivr"),                        # Index 4
+        ("jsDelivr CF", "testingcf.jsdelivr.net"),       # Index 5
+        ("jsDelivr Fastly", "fastly.jsdelivr.net"),      # Index 6
     ]
+
+    if isinstance(selected_index, str):
+        selected_index = selected_index.strip()
+        if selected_index.isdigit():
+            selected_index = int(selected_index) - 1
+        else:
+            keyword = selected_index.lower()
+            found_idx = 0
+            for i, (name, prefix) in enumerate(proxy_methods):
+                if keyword in prefix.lower() or keyword in name.lower():
+                    found_idx = i
+                    break
+            selected_index = found_idx
+            
+    if not isinstance(selected_index, int) or selected_index < 0 or selected_index >= len(proxy_methods):
+        selected_index = 0
 
     selected_name, selected_prefix = proxy_methods[selected_index]
     all_prefixes = [prefix for _, prefix in proxy_methods]
