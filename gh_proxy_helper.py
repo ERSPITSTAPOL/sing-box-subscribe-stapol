@@ -1,6 +1,7 @@
 import re
 
 def set_gh_proxy(config, selected_index=0):
+
     proxy_methods = [
         ("gh-proxy.com", "https://gh-proxy.com/"),
         ("cnxiaobai",    "https://github.cnxiaobai.com/"),
@@ -28,10 +29,10 @@ def set_gh_proxy(config, selected_index=0):
         selected_index = 0
 
     target_name, target_prefix = proxy_methods[selected_index]
-    
     is_jsdelivr_mode = "jsdelivr" in target_name.lower() or "jsdelivr" in target_prefix.lower()
 
     def restore_raw_url(line):
+        line = line.strip() 
         raw_prefix = "https://raw.githubusercontent.com/"
         
         if line.startswith(raw_prefix):
