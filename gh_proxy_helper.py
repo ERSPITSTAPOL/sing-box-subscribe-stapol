@@ -1,15 +1,14 @@
 import re
 
 def set_gh_proxy(config, selected_index=0):
-
     proxy_methods = [
-        ("gh-proxy.com", "https://gh-proxy.com/"),       # Index 0
-        ("gh.sageer.me", "https://gh.sageer.me/"),       # Index 1
-        ("ghproxy.com", "https://ghproxy.com/"),         # Index 2
-        ("mirror.ghproxy.com", "https://mirror.ghproxy.com/"), # Index 3
-        ("jsDelivr", "jsdelivr"),                        # Index 4
-        ("jsDelivr CF", "testingcf.jsdelivr.net"),       # Index 5
-        ("jsDelivr Fastly", "fastly.jsdelivr.net"),      # Index 6
+        ("gh-proxy.com", "https://gh-proxy.com/"),
+        ("cnxiaobai",    "https://github.cnxiaobai.com/"),
+        ("ghfast",       "https://ghfast.top/"),
+        ("chenc",        "https://github.chenc.dev/"),
+        ("jsDelivr",     "https://cdn.jsdelivr.net"),
+        ("jsDelivr CF",  "https://testingcf.jsdelivr.net"),
+        ("jsDelivr Fastly","https://fastly.jsdelivr.net")
     ]
 
     if isinstance(selected_index, str):
@@ -19,21 +18,25 @@ def set_gh_proxy(config, selected_index=0):
         else:
             keyword = selected_index.lower()
             found_idx = 0
-            for i, (name, prefix) in enumerate(proxy_methods):
-                if keyword in prefix.lower() or keyword in name.lower():
+            for i, (name, url) in enumerate(proxy_methods):
+                if keyword in name.lower() or keyword in url.lower():
                     found_idx = i
                     break
             selected_index = found_idx
-            
+
     if not isinstance(selected_index, int) or selected_index < 0 or selected_index >= len(proxy_methods):
         selected_index = 0
 
-    selected_name, selected_prefix = proxy_methods[selected_index]
-    all_prefixes = [prefix for _, prefix in proxy_methods]
+    target_name, target_prefix = proxy_methods[selected_index]
+
+    is_jsdelivr_mode = "jsdelivr" in target_name.lower() or "jsdelivr" in target_prefix.lower()
 
     def restore_raw_url(line):
+        if line.startswith("https://raw.githubusercontent.com/"):
+            return line
+
         jsdelivr_pattern = (
-            r'https://(?:cdn\.jsdelivr\.net|testingcf\.jsdelivr\.net|fastly\.jsdelivr\.net)'
+            r'https://(?:cdn|testingcf|fastly)\.jsdelivr\.net'
             r'/gh/([^/]+)/([^@]+)@([^/]+)/(.*)'
         )
         match = re.match(jsdelivr_pattern, line)
@@ -41,45 +44,38 @@ def set_gh_proxy(config, selected_index=0):
             user, repo, branch, path = match.groups()
             return f"https://raw.githubusercontent.com/{user}/{repo}/{branch}/{path}"
 
-        for prefix in all_prefixes:
-            if line.startswith(prefix):
-                if selected_prefix in ("jsdelivr", "testingcf.jsdelivr.net", "fastly.jsdelivr.net") \
-                   and "raw.githubusercontent.com" not in line:
-                    return line
-                return line.replace(prefix, selected_prefix, 1)
-
+        for _, prefix in proxy_methods:
+            check_prefix = prefix if prefix.endswith('/') else prefix + '/'
+            
+            if line.startswith(check_prefix):
+                rest = line[len(check_prefix):]
+                if rest.startswith("https://raw.githubusercontent.com/"):
+                    return rest
+                    
+                if rest.startswith("raw.githubusercontent.com/"):
+                    return "https://" + rest
+                    
         return line
-
-    def convert_to_jsdelivr(raw_url, domain):
-        match = re.match(r'https://raw\.githubusercontent\.com/([^/]+)/([^/]+)/([^/]+)/(.*)', raw_url)
-        if match:
-            user, repo, branch, path = match.groups()
-            return f"https://{domain}/gh/{user}/{repo}@{branch}/{path}"
-        return raw_url
 
     def apply_proxy(line):
         original = restore_raw_url(line)
-        if selected_prefix in ("jsdelivr", "testingcf.jsdelivr.net", "fastly.jsdelivr.net"):
-            if "raw.githubusercontent.com" not in original:
-                return original
-            if selected_prefix == "jsdelivr":
-                domain = "cdn.jsdelivr.net"
-            elif selected_prefix == "testingcf.jsdelivr.net":
-                domain = "testingcf.jsdelivr.net"
-            else:  # fastly
-                domain = "fastly.jsdelivr.net"
-            return convert_to_jsdelivr(original, domain)
-        return re.sub(
-            r'^https://raw\.githubusercontent\.com/',
-            selected_prefix + 'raw.githubusercontent.com/',
-            original
-        )
+        
+        if "raw.githubusercontent.com" not in original:
+            return line
+
+        if is_jsdelivr_mode:
+            match = re.match(r'https://raw\.githubusercontent\.com/([^/]+)/([^/]+)/([^/]+)/(.*)', original)
+            if match:
+                user, repo, branch, path = match.groups()
+                clean_prefix = target_prefix.rstrip('/')
+                return f"{clean_prefix}/gh/{user}/{repo}@{branch}/{path}"
+            return original
+        else:
+            return target_prefix + original
 
     if isinstance(config, str):
         return apply_proxy(config)
-
     elif isinstance(config, list):
         return [apply_proxy(line) for line in config]
-
     else:
         raise TypeError("config 应该是字符串或字符串列表")
