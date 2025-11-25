@@ -1,32 +1,36 @@
 import re
 
 def set_gh_proxy(config, selected_index=0):
-    proxy_methods = [
-        ("gh-proxy.com", "https://gh-proxy.com/"),
-        ("cnxiaobai",    "https://github.cnxiaobai.com/"),
-        ("ghfast",       "https://ghfast.top/"),
-        ("chenc",        "https://github.chenc.dev/"),
-        ("jsDelivr",     "https://cdn.jsdelivr.net"),
-        ("jsDelivr CF",  "https://testingcf.jsdelivr.net"),
-        ("jsDelivr Fastly","https://fastly.jsdelivr.net")
-    ]
+    proxy_methods = {
+        1: ("gh-proxy.com", "https://gh-proxy.com/"),
+        2: ("cnxiaobai",    "https://github.cnxiaobai.com/"),
+        3: ("ghfast",       "https://ghfast.top/"),
+        4: ("chenc",        "https://github.chenc.dev/"),
+        5: ("jsDelivr",     "https://cdn.jsdelivr.net"),
+        6: ("jsDelivr CF",  "https://testingcf.jsdelivr.net"),
+        7: ("jsDelivr Fastly","https://fastly.jsdelivr.net")
+    }
+    MAX_INDEX = len(proxy_methods)
 
     if isinstance(selected_index, str):
         selected_index = selected_index.strip()
+        
         if selected_index.isdigit():
-            selected_index = int(selected_index) - 1
+            selected_index = int(selected_index) 
         else:
             keyword = selected_index.lower()
-            found_idx = 0 
-            for i, (name, url) in enumerate(proxy_methods):
+            found_key = 1
+            for key, (name, url) in proxy_methods.items():
                 if keyword in name.lower() or keyword in url.lower():
-                    found_idx = i
+                    found_key = key
                     break
-            selected_index = found_idx
-
-    if not isinstance(selected_index, int) or selected_index < 0 or selected_index >= len(proxy_methods):
-        selected_index = 0
-
+            selected_index = found_key
+    
+    if selected_index == 0:
+        selected_index = 1
+    if not isinstance(selected_index, int) or selected_index < 1 or selected_index > MAX_INDEX:
+        selected_index = 1
+    
     target_name, target_prefix = proxy_methods[selected_index]
     is_jsdelivr_mode = "jsdelivr" in target_name.lower() or "jsdelivr" in target_prefix.lower()
 
@@ -42,13 +46,12 @@ def set_gh_proxy(config, selected_index=0):
             r'/gh/([^/]+)/([^@]+)@([^/]+)/(.*)'
         )
         raw_sub = r'https://raw.githubusercontent.com/\1/\2/\3/\4'
-        
         new_line, count = re.subn(jsdelivr_pattern, raw_sub, line)
         
         if count > 0:
             return new_line
         
-        for _, prefix in proxy_methods:
+        for _, prefix in proxy_methods.values():
             check_prefix = prefix if prefix.endswith('/') else prefix + '/'
             
             if line.startswith(check_prefix):
