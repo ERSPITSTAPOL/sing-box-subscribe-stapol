@@ -4,12 +4,12 @@ from urllib.parse import parse_qs, urlparse, urlencode, urlunparse, quote, unquo
 def set_gh_proxy(config, gh="1"):
     proxy_methods = [
         ("gh-proxy", "https://gh-proxy.com/"),
-        ("gh-sageer", "https://gh.sageer.me/"),
+        ("sageer", "https://gh.sageer.me/"),
         ("ghproxy", "https://ghproxy.com/"),
         ("mirror", "https://mirror.ghproxy.com/"),
-        ("jsdelivr", "cdn.jsdelivr.net"),
-        ("jsdelivr-cf", "testingcf.jsdelivr.net"),
-        ("jsdelivr-fastly", "fastly.jsdelivr.net")
+        ("cdn", "https://cdn.jsdelivr.net"),
+        ("testingcf", "https://testingcf.jsdelivr.net"),
+        ("fastly", "https://fastly.jsdelivr.net")
     ]
 
     if gh.isdigit():
@@ -39,7 +39,7 @@ def set_gh_proxy(config, gh="1"):
 
         for prefix in all_prefixes:
             if line.startswith(prefix):
-                if selected_prefix in ("cdn.jsdelivr.net", "testingcf.jsdelivr.net", "fastly.jsdelivr.net") \
+                if selected_prefix in ("https://cdn.jsdelivr.net", "https://testingcf.jsdelivr.net", "https://fastly.jsdelivr.net") \
                    and "raw.githubusercontent.com" not in line:
                     return line
                 return line.replace(prefix, selected_prefix, 1)
@@ -55,19 +55,17 @@ def set_gh_proxy(config, gh="1"):
     def apply_proxy(line):
         original = restore_raw_url(line)
 
-        if selected_prefix in ("cdn.jsdelivr.net", "testingcf.jsdelivr.net", "fastly.jsdelivr.net"):
+        if selected_prefix in ("https://cdn.jsdelivr.net", "https://testingcf.jsdelivr.net", "https://fastly.jsdelivr.net"):
             if "raw.githubusercontent.com" not in original:
                 return original
 
-            if selected_prefix == "cdn.jsdelivr.net":
+            if selected_prefix == "https://cdn.jsdelivr.net":
                 domain = "cdn.jsdelivr.net"
-            elif selected_prefix == "testingcf.jsdelivr.net":
+            elif selected_prefix == "https://testingcf.jsdelivr.net":
                 domain = "testingcf.jsdelivr.net"
-            else:  # fastly
+            else:
                 domain = "fastly.jsdelivr.net"
-
             return convert_to_jsdelivr(original, domain)
-
         return re.sub(
             r'^https://raw\.githubusercontent\.com/',
             selected_prefix + 'raw.githubusercontent.com/',
@@ -80,6 +78,8 @@ def set_gh_proxy(config, gh="1"):
 
         if "file" in qs:
             original_file = unquote(qs["file"][0])
+            if original_file.startswith("https:/") and not original_file.startswith("https://"):
+                original_file = original_file.replace("https:/", "https://", 1)
             converted_file = apply_proxy(original_file)
             qs["file"] = [quote(converted_file, safe=":/@")]
             new_query = urlencode(qs, doseq=True)
