@@ -1,17 +1,28 @@
 import re
-def set_gh_proxy(config, selected_index=0):
-
+def set_gh_proxy(config, gh="1"):
     proxy_methods = [
-        ("gh-proxy.com", "https://gh-proxy.com/"),
-        ("gh.sageer.me", "https://gh.sageer.me/"),
-        ("ghproxy.com", "https://ghproxy.com/"),
-        ("mirror.ghproxy.com", "https://mirror.ghproxy.com/"),
-        ("jsDelivr", "jsdelivr"),
-        ("jsDelivr CF", "testingcf.jsdelivr.net"),
-        ("jsDelivr Fastly", "fastly.jsdelivr.net"),
+        ("gh-proxy", "https://gh-proxy.com/"),
+        ("gh-sageer", "https://gh.sageer.me/"),
+        ("ghproxy", "https://ghproxy.com/"),
+        ("mirror", "https://mirror.ghproxy.com/"),
+        ("jsdelivr", "cdn.jsdelivr.net"),
+        ("jsdelivr-cf", "testingcf.jsdelivr.net"),
+        ("jsdelivr-fastly", "fastly.jsdelivr.net")
     ]
 
-    selected_name, selected_prefix = proxy_methods[selected_index]
+    if gh.isdigit():
+        selected_index = int(gh) - 1
+        if not (0 <= selected_index < len(proxy_methods)):
+            raise ValueError(f"gh 数字索引超出范围: {gh}")
+        selected_name, selected_prefix = proxy_methods[selected_index]
+    else:
+        for name, prefix in proxy_methods:
+            if name == gh:
+                selected_name, selected_prefix = name, prefix
+                break
+        else:
+            raise ValueError(f"未知 GitHub 加速名称: {gh}")
+
     all_prefixes = [prefix for _, prefix in proxy_methods]
 
     def restore_raw_url(line):
@@ -23,13 +34,13 @@ def set_gh_proxy(config, selected_index=0):
         if match:
             user, repo, branch, path = match.groups()
             return f"https://raw.githubusercontent.com/{user}/{repo}/{branch}/{path}"
+
         for prefix in all_prefixes:
             if line.startswith(prefix):
-                if selected_prefix in ("jsdelivr", "testingcf.jsdelivr.net", "fastly.jsdelivr.net") \
+                if selected_prefix in ("cdn.jsdelivr.net", "testingcf.jsdelivr.net", "fastly.jsdelivr.net") \
                    and "raw.githubusercontent.com" not in line:
                     return line
                 return line.replace(prefix, selected_prefix, 1)
-
         return line
 
     def convert_to_jsdelivr(raw_url, domain):
@@ -41,16 +52,20 @@ def set_gh_proxy(config, selected_index=0):
 
     def apply_proxy(line):
         original = restore_raw_url(line)
-        if selected_prefix in ("jsdelivr", "testingcf.jsdelivr.net", "fastly.jsdelivr.net"):
+
+        if selected_prefix in ("cdn.jsdelivr.net", "testingcf.jsdelivr.net", "fastly.jsdelivr.net"):
             if "raw.githubusercontent.com" not in original:
                 return original
-            if selected_prefix == "jsdelivr":
+
+            if selected_prefix == "cdn.jsdelivr.net":
                 domain = "cdn.jsdelivr.net"
             elif selected_prefix == "testingcf.jsdelivr.net":
                 domain = "testingcf.jsdelivr.net"
             else:  # fastly
                 domain = "fastly.jsdelivr.net"
+
             return convert_to_jsdelivr(original, domain)
+
         return re.sub(
             r'^https://raw\.githubusercontent\.com/',
             selected_prefix + 'raw.githubusercontent.com/',
@@ -59,9 +74,7 @@ def set_gh_proxy(config, selected_index=0):
 
     if isinstance(config, str):
         return apply_proxy(config)
-
     elif isinstance(config, list):
         return [apply_proxy(line) for line in config]
-
     else:
         raise TypeError("config 应该是字符串或字符串列表")
