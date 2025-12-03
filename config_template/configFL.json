@@ -302,29 +302,21 @@
     "rules": [
       {
         "action": "hijack-dns",
+        "ip_cidr": ["172.19.0.2","fdfe:dcba:9876::2"],
         "port": 53
       },
       {
         "action": "sniff",
         "sniffer": [
-          "dns",
-          "http",
           "tls",
           "quic",
+          "dns",
+          "http",
           "ntp",
           "stun",
           "dtls"
         ],
         "timeout": "300ms"
-      },
-      {
-       "action": "hijack-dns",
-       "protocol": "dns"
-      },
-      {
-        "action":"reject",
-        "method": "drop",
-        "network": "icmp"
       },
       {
         "action": "route",
@@ -348,7 +340,7 @@
       },
       {
         "action": "route",
-        "rule_set":["geoip-google","geosite-google"],
+        "rule_set":["geosite-google","geoip-google"],
         "outbound":"🌐Google"
       },
       {
@@ -377,15 +369,18 @@
         "outbound":"direct"
       },
       {
+       "action": "hijack-dns",
+       "protocol": "dns"
+      },
+      {
         "action": "route",
         "ip_is_private":true,
         "outbound":"direct"
       },
       {
-        "action": "reject",
+        "action":"reject",
         "method": "drop",
-        "ip_cidr": ["224.0.0.0/3","ff00::/8"],
-        "source_ip_cidr": ["224.0.0.0/3","ff00::/8"]
+        "network": "icmp"
       }
     ],
   "rule_set": [
