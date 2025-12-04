@@ -319,6 +319,10 @@
         "timeout": "300ms"
       },
       {
+       "action": "hijack-dns",
+       "protocol": "dns"
+      },
+      {
         "action": "route",
         "clash_mode":"Global",
         "outbound": "🚀Global"
@@ -345,7 +349,7 @@
       },
       {
         "action": "route",
-        "rule_set": ["geoip-telegram","geosite-telegram"],
+        "rule_set": ["geosite-telegram","geoip-telegram"],
         "outbound":"💬Telegram"
       },
       {
@@ -367,10 +371,6 @@
         "action": "route",
         "rule_set":["geosite-cn","geoip-cn"],
         "outbound":"direct"
-      },
-      {
-       "action": "hijack-dns",
-       "protocol": "dns"
       },
       {
         "action": "route",
