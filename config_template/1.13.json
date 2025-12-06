@@ -275,15 +275,6 @@
         "port":53
       },
       {
-        "action":"sniff",
-        "sniffer":["tls","quic","dns","http","ntp","stun","dtls"],
-        "timeout":"300ms"
-      },
-      {
-       "action":"hijack-dns",
-       "protocol":"dns"
-      },
-      {
         "action":"route",
         "clash_mode":"Global",
         "outbound":"🚀Global"
@@ -294,9 +285,33 @@
         "outbound":"direct"
       },
       {
-        "action":"reject",
-        "method":"drop",
-        "rule_set":"geosite-category-ads-all"
+        "action":"route",
+        "rule_set":"geoip-google",
+        "outbound":"Google"
+      },
+      {
+        "action":"route",
+        "rule_set":"geoip-telegram",
+        "outbound":"Telegram"
+      },
+      {
+        "action":"route",
+        "rule_set":"geoip-facebook",
+        "outbound":"Meta"
+      },
+      {
+        "action":"route",
+        "rule_set":"geoip-cn",
+        "outbound":"direct"
+      },
+      {
+        "action":"sniff",
+        "sniffer":["tls","quic","dns","http","ntp","stun","dtls"],
+        "timeout":"300ms"
+      },
+      {
+       "action":"hijack-dns",
+       "protocol":"dns"
       },
       {
         "action":"route",
@@ -305,22 +320,22 @@
       },
       {
         "action":"route",
-        "rule_set":["geosite-google","geosite-github","geoip-google"],
+        "rule_set":["geosite-google","geosite-github"],
         "outbound":"Google"
       },
       {
         "action":"route",
-        "rule_set":["geosite-telegram","geoip-telegram"],
+        "rule_set":"geosite-telegram",
         "outbound":"Telegram"
       },
       {
         "action":"route",
-        "rule_set":["geosite-meta","geoip-facebook"],
+        "rule_set":"geosite-meta",
         "outbound":"Meta"
       },
       {
         "action":"route",
-        "rule_set":["geosite-cn","geoip-cn"],
+        "rule_set":"geosite-cn",
         "outbound":"direct"
       },
       {
