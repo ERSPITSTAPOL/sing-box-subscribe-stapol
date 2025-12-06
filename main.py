@@ -388,14 +388,15 @@ def pro_node_template(data_nodes, config_outbound, group):
 
 def combin_to_config(config, data):
     config_outbounds = config.get("outbounds", [])
-    groups_to_remove = []  # 用于存储需要删除的组标签
-    tags_to_remove = set()  # 用于存储需要删除的标签
-    temp_outbounds = []  # 临时存储处理后的出站配置
+    i = 0
+    groups_to_remove = []
+    temp_outbounds = []
     for group in data:
         if 'subgroup' in group:
             group_tag = (group.rsplit("-", 1)[0]).rsplit("-", 1)[-1]
             new_outbound = {'tag': group_tag, 'type': 'selector', 'outbounds': ['{' + group + '}']}
             config_outbounds.insert(-2, new_outbound)
+
             i = 0
             for out in config_outbounds:
                 if out.get("outbounds"):
@@ -407,6 +408,7 @@ def combin_to_config(config, data):
                             i += 1
                         else:
                             out["outbounds"].insert(i, group_tag)
+
             # 遍历所有出站配置，处理每个组
             for po in config_outbounds:
                 if po.get("outbounds"):
@@ -441,25 +443,32 @@ def combin_to_config(config, data):
                                         t_o.extend(pro_node_template(nodes, po, group))
                         else:
                             t_o.append(oo)
+
                     # 如果出站节点为空，标记删除该组
                     if len(t_o) == 0:
                         print(f"发现 {po['tag']} 出站下的节点数量为 0，已删除该组。")
-                        tags_to_remove.add(po['tag'])  # 记录该组标签
+                        groups_to_remove.append(po['tag'])  # 记录该组标签
                         continue  # 跳过该组的处理
+
                     po['outbounds'] = t_o
                     if po.get('filter'):
                         del po['filter']
+
     for po in config_outbounds:
         if po.get("outbounds"):
-            po['outbounds'] = [item for item in po['outbounds'] if item.strip('{}') not in tags_to_remove]
+            po['outbounds'] = [item for item in po['outbounds'] if item.strip('{}') not in groups_to_remove]
+
     for group in data:
         temp_outbounds.extend(data[group])
+
     config['outbounds'] = config_outbounds + temp_outbounds
+
     # 自动配置路由规则到dns规则，避免dns泄露
     dns_tags = [server.get('tag') for server in config['dns']['servers']]
     asod = providers.get("auto_set_outbounds_dns")
     if asod and asod.get('proxy') and asod.get('direct') and asod['proxy'] in dns_tags and asod['direct'] in dns_tags:
         set_proxy_rule_dns(config)
+
     # 提取 wireguard 类型内容
     wireguard_items = [item for item in config['outbounds'] if item.get('type') == 'wireguard']
     if wireguard_items:
