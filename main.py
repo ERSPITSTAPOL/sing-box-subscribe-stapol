@@ -387,85 +387,71 @@ def pro_node_template(data_nodes, config_outbound, group):
     return [node.get('tag') for node in data_nodes]
 
 def combin_to_config(config, data):
-    config_outbounds = config["outbounds"] if config.get("outbounds") else None
-    i = 0
+    config_outbounds = config.get("outbounds", [])
+    groups_to_remove = []  # 用于存储需要删除的组标签
+    tags_to_remove = set()  # 用于存储需要删除的标签
+    temp_outbounds = []  # 临时存储处理后的出站配置
     for group in data:
         if 'subgroup' in group:
-            i += 1
+            group_tag = (group.rsplit("-", 1)[0]).rsplit("-", 1)[-1]
+            new_outbound = {'tag': group_tag, 'type': 'selector', 'outbounds': ['{' + group + '}']}
+            config_outbounds.insert(-2, new_outbound)
+            i = 0
             for out in config_outbounds:
                 if out.get("outbounds"):
                     if out['tag'] == 'Proxy':
                         out["outbounds"] = [out["outbounds"]] if isinstance(out["outbounds"], str) else out["outbounds"]
                         if '{all}' in out["outbounds"]:
                             index_of_all = out["outbounds"].index('{all}')
-                            out["outbounds"][index_of_all] = (group.rsplit("-", 1)[0]).rsplit("-", 1)[-1]
+                            out["outbounds"][index_of_all] = group_tag
                             i += 1
                         else:
-                            out["outbounds"].insert(i, (group.rsplit("-", 1)[0]).rsplit("-", 1)[-1])
-            new_outbound = {'tag': (group.rsplit("-", 1)[0]).rsplit("-", 1)[-1], 'type': 'selector', 'outbounds': ['{' + group + '}']}
-            config_outbounds.insert(-2, new_outbound)
-            if 'subgroup' not in group:
-                for out in config_outbounds:
-                    if out.get("outbounds"):
-                        if out['tag'] == 'Proxy':
-                            out["outbounds"] = [out["outbounds"]] if isinstance(out["outbounds"], str) else out["outbounds"]
-                            out["outbounds"].append('{' + group + '}')
-    temp_outbounds = []
-    if config_outbounds:
-        # 获取 "type": "direct"的"tag"值
-        direct_item = next((item for item in config_outbounds if item.get('type') == 'direct'), None)
-        # 提前处理all模板
-        for po in config_outbounds:
-            # 处理出站
-            if po.get("outbounds"):
-                if '{all}' in po["outbounds"]:
-                    o1 = []
-                    for item in po["outbounds"]:
-                        if item.startswith('{') and item.endswith('}'):
-                            _item = item[1:-1]
-                            if _item == 'all':
+                            out["outbounds"].insert(i, group_tag)
+            # 遍历所有出站配置，处理每个组
+            for po in config_outbounds:
+                if po.get("outbounds"):
+                    if '{all}' in po["outbounds"]:
+                        o1 = []
+                        for item in po["outbounds"]:
+                            if item.startswith('{') and item.endswith('}'):
+                                _item = item[1:-1]
+                                if _item == 'all':
+                                    o1.append(item)
+                            else:
                                 o1.append(item)
+                        po['outbounds'] = o1
+                    t_o = []
+                    check_dup = []
+                    for oo in po["outbounds"]:
+                        # 避免添加重复节点
+                        if oo in check_dup:
+                            continue
                         else:
-                            o1.append(item)
-                    po['outbounds'] = o1
-                t_o = []
-                check_dup = []
-                for oo in po["outbounds"]:
-                    # 避免添加重复节点
-                    if oo in check_dup:
-                        continue
-                    else:
-                        check_dup.append(oo)
-                    # 处理模板
-                    if oo.startswith('{') and oo.endswith('}'):
-                        oo = oo[1:-1]
-                        if data.get(oo):
-                            nodes = data[oo]
-                            t_o.extend(pro_node_template(nodes, po, oo))
+                            check_dup.append(oo)
+                        # 处理模板
+                        if oo.startswith('{') and oo.endswith('}'):
+                            oo = oo[1:-1]
+                            if data.get(oo):
+                                nodes = data[oo]
+                                t_o.extend(pro_node_template(nodes, po, oo))
+                            else:
+                                if oo == 'all':
+                                    for group in data:
+                                        nodes = data[group]
+                                        t_o.extend(pro_node_template(nodes, po, group))
                         else:
-                            if oo == 'all':
-                                for group in data:
-                                    nodes = data[group]
-                                    t_o.extend(pro_node_template(nodes, po, group))
-                    else:
-                        t_o.append(oo)
-                if len(t_o) == 0:
-                    t_o.append(direct_item['tag'])  # outbound内容为空时 添加直连 direct
-                    print('发现 {} 出站下的节点数量为 0 ，会导致sing-box无法运行，请检查config模板是否正确。'.format(
-                        po['tag']))
-                    """
-                    config_path = json.loads(temp_json_data).get("save_config_path", "config.json")
-                    CONFIG_FILE_NAME = config_path
-                    config_file_path = os.path.join('/tmp', CONFIG_FILE_NAME)
-                    if os.path.exists(config_file_path):
-                        os.remove(config_file_path)
-                        print(f"已删除文件：{config_file_path}")
-                        # print(f"Các tập tin đã bị xóa: {config_file_path}")
-                    sys.exit()
-                    """
-                po['outbounds'] = t_o
-                if po.get('filter'):
-                    del po['filter']
+                            t_o.append(oo)
+                    # 如果出站节点为空，标记删除该组
+                    if len(t_o) == 0:
+                        print(f"发现 {po['tag']} 出站下的节点数量为 0，已删除该组。")
+                        tags_to_remove.add(po['tag'])  # 记录该组标签
+                        continue  # 跳过该组的处理
+                    po['outbounds'] = t_o
+                    if po.get('filter'):
+                        del po['filter']
+    for po in config_outbounds:
+        if po.get("outbounds"):
+            po['outbounds'] = [item for item in po['outbounds'] if item.strip('{}') not in tags_to_remove]
     for group in data:
         temp_outbounds.extend(data[group])
     config['outbounds'] = config_outbounds + temp_outbounds
