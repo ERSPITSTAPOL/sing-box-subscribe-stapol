@@ -56,10 +56,11 @@
     ],
         "strategy":"ipv4_only",
         "final":"remote",
-        "disable_cache":true,
+        "disable_cache":false,
         "disable_expire":false,
-        "independent_cache":false,
-        "reverse_mapping":true
+        "cache_capacity":1024,
+        "reverse_mapping":true,
+        "independent_cache":false
   },
  "inbounds":[
     {
