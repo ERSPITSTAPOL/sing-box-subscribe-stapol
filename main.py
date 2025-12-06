@@ -441,7 +441,7 @@ def combin_to_config(config, data):
                                     nodes = data[group]
                                     t_o.extend(pro_node_template(nodes, po, group))
                     else:
-                        t_o.append(oo)                
+                        t_o.append(oo)
                 if len(t_o) == 0:
                     empty_tags.add(po['tag'])
                 else:
@@ -453,6 +453,8 @@ def combin_to_config(config, data):
             for po in config_outbounds:
                 if po.get("outbounds"):
                     po["outbounds"] = [tag for tag in po["outbounds"] if tag not in empty_tags]
+                if po.get("default") and po["default"] in empty_tags:
+                    po.pop("default", None)
     for group in data:
         temp_outbounds.extend(data[group])    
     config['outbounds'] = config_outbounds + temp_outbounds
