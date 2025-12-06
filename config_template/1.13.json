@@ -59,7 +59,7 @@
         "disable_cache":true,
         "disable_expire":false,
         "independent_cache":false,
-        "reverse_mapping":false
+        "reverse_mapping":true
   },
  "inbounds":[
     {
@@ -285,29 +285,9 @@
         "outbound":"direct"
       },
       {
-        "action":"route",
-        "rule_set":"geoip-google",
-        "outbound":"Google"
-      },
-      {
-        "action":"route",
-        "rule_set":"geoip-telegram",
-        "outbound":"Telegram"
-      },
-      {
-        "action":"route",
-        "rule_set":"geoip-facebook",
-        "outbound":"Meta"
-      },
-      {
-        "action":"route",
-        "rule_set":"geoip-cn",
-        "outbound":"direct"
-      },
-      {
         "action":"sniff",
-        "sniffer":["tls","quic","dns","http","ntp","stun","dtls"],
-        "timeout":"300ms"
+        "sniffer":"dns",
+        "timeout":"100ms"
       },
       {
        "action":"hijack-dns",
@@ -320,22 +300,22 @@
       },
       {
         "action":"route",
-        "rule_set":["geosite-google","geosite-github"],
+        "rule_set":["geosite-google","geosite-github","geoip-google"],
         "outbound":"Google"
       },
       {
         "action":"route",
-        "rule_set":"geosite-telegram",
+        "rule_set":["geosite-telegram","geoip-telegram"],
         "outbound":"Telegram"
       },
       {
         "action":"route",
-        "rule_set":"geosite-meta",
+        "rule_set":["geosite-meta","geoip-facebook"],
         "outbound":"Meta"
       },
       {
         "action":"route",
-        "rule_set":"geosite-cn",
+        "rule_set":["geosite-cn","geoip-cn"],
         "outbound":"direct"
       },
       {
