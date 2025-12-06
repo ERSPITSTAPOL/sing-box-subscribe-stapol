@@ -387,89 +387,80 @@ def pro_node_template(data_nodes, config_outbound, group):
     return [node.get('tag') for node in data_nodes]
 
 def combin_to_config(config, data):
-    config_outbounds = config.get("outbounds", [])
+    config_outbounds = config["outbounds"] if config.get("outbounds") else None
     i = 0
-    groups_to_remove = []
-    temp_outbounds = []
     for group in data:
         if 'subgroup' in group:
-            group_tag = (group.rsplit("-", 1)[0]).rsplit("-", 1)[-1]
-            new_outbound = {'tag': group_tag, 'type': 'selector', 'outbounds': ['{' + group + '}']}
-            config_outbounds.insert(-2, new_outbound)
-
-            i = 0
+            i += 1
             for out in config_outbounds:
                 if out.get("outbounds"):
                     if out['tag'] == 'Proxy':
                         out["outbounds"] = [out["outbounds"]] if isinstance(out["outbounds"], str) else out["outbounds"]
                         if '{all}' in out["outbounds"]:
                             index_of_all = out["outbounds"].index('{all}')
-                            out["outbounds"][index_of_all] = group_tag
+                            out["outbounds"][index_of_all] = (group.rsplit("-", 1)[0]).rsplit("-", 1)[-1]
                             i += 1
                         else:
-                            out["outbounds"].insert(i, group_tag)
-
-            # 遍历所有出站配置，处理每个组
-            for po in config_outbounds:
-                if po.get("outbounds"):
-                    if '{all}' in po["outbounds"]:
-                        o1 = []
-                        for item in po["outbounds"]:
-                            if item.startswith('{') and item.endswith('}'):
-                                _item = item[1:-1]
-                                if _item == 'all':
-                                    o1.append(item)
-                            else:
+                            out["outbounds"].insert(i, (group.rsplit("-", 1)[0]).rsplit("-", 1)[-1])
+            new_outbound = {
+                'tag': (group.rsplit("-", 1)[0]).rsplit("-", 1)[-1], 
+                'type': 'selector', 
+                'outbounds': ['{' + group + '}']
+            }
+            config_outbounds.insert(-2, new_outbound)
+    temp_outbounds = []
+    if config_outbounds:
+        empty_tags = set()
+        for po in config_outbounds:
+            if po.get("outbounds"):
+                if '{all}' in po["outbounds"]:
+                    o1 = []
+                    for item in po["outbounds"]:
+                        if item.startswith('{') and item.endswith('}'):
+                            _item = item[1:-1]
+                            if _item == 'all':
                                 o1.append(item)
-                        po['outbounds'] = o1
-                    t_o = []
-                    check_dup = []
-                    for oo in po["outbounds"]:
-                        # 避免添加重复节点
-                        if oo in check_dup:
-                            continue
                         else:
-                            check_dup.append(oo)
-                        # 处理模板
-                        if oo.startswith('{') and oo.endswith('}'):
-                            oo = oo[1:-1]
-                            if data.get(oo):
-                                nodes = data[oo]
-                                t_o.extend(pro_node_template(nodes, po, oo))
-                            else:
-                                if oo == 'all':
-                                    for group in data:
-                                        nodes = data[group]
-                                        t_o.extend(pro_node_template(nodes, po, group))
+                            o1.append(item)
+                    po['outbounds'] = o1
+                t_o = []
+                check_dup = []
+                for oo in po["outbounds"]:
+                    if oo in check_dup:
+                        continue
+                    else:
+                        check_dup.append(oo)
+                    if oo.startswith('{') and oo.endswith('}'):
+                        oo = oo[1:-1]
+                        if data.get(oo):
+                            nodes = data[oo]
+                            t_o.extend(pro_node_template(nodes, po, oo))
                         else:
-                            t_o.append(oo)
-
-                    # 如果出站节点为空，标记删除该组
-                    if len(t_o) == 0:
-                        print(f"发现 {po['tag']} 出站下的节点数量为 0，已删除该组。")
-                        groups_to_remove.append(po['tag'])  # 记录该组标签
-                        continue  # 跳过该组的处理
-
+                            if oo == 'all':
+                                for group in data:
+                                    nodes = data[group]
+                                    t_o.extend(pro_node_template(nodes, po, group))
+                    else:
+                        t_o.append(oo)                
+                if len(t_o) == 0:
+                    empty_tags.add(po['tag'])
+                else:
                     po['outbounds'] = t_o
                     if po.get('filter'):
                         del po['filter']
-
-    for po in config_outbounds:
-        if po.get("outbounds"):
-            po['outbounds'] = [item for item in po['outbounds'] if item.strip('{}') not in groups_to_remove]
-
+        if empty_tags:
+            config_outbounds = [out for out in config_outbounds if out['tag'] not in empty_tags]
+            for po in config_outbounds:
+                if po.get("outbounds"):
+                    po["outbounds"] = [tag for tag in po["outbounds"] if tag not in empty_tags]
     for group in data:
-        temp_outbounds.extend(data[group])
-
+        temp_outbounds.extend(data[group])    
     config['outbounds'] = config_outbounds + temp_outbounds
-
-    # 自动配置路由规则到dns规则，避免dns泄露
-    dns_tags = [server.get('tag') for server in config['dns']['servers']]
-    asod = providers.get("auto_set_outbounds_dns")
-    if asod and asod.get('proxy') and asod.get('direct') and asod['proxy'] in dns_tags and asod['direct'] in dns_tags:
-        set_proxy_rule_dns(config)
-
-    # 提取 wireguard 类型内容
+    if config.get('dns') and config['dns'].get('servers'):
+        dns_tags = [server.get('tag') for server in config['dns']['servers']]
+        asod = providers.get("auto_set_outbounds_dns") if 'providers' in globals() else None
+        if asod and asod.get('proxy') and asod.get('direct') and asod['proxy'] in dns_tags and asod['direct'] in dns_tags:
+            set_proxy_rule_dns(config)
     wireguard_items = [item for item in config['outbounds'] if item.get('type') == 'wireguard']
     if wireguard_items:
         endpoints = []
@@ -478,10 +469,9 @@ def combin_to_config(config, data):
         new_config = OrderedDict()
         for key, value in config.items():
             new_config[key] = value
-            if key == 'outbounds':  # 在 outbounds 后面插入 endpoint
+            if key == 'outbounds':
                 new_config['endpoints'] = endpoints
         config = new_config
-        # 更新 outbounds，移除 wireguard 类型
         config['outbounds'] = [item for item in config['outbounds'] if item.get('type') != 'wireguard']
     return config
 
