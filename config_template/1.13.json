@@ -275,6 +275,15 @@
         "port":53
       },
       {
+        "action":"sniff",
+        "sniffer":"dns",
+        "timeout":"100ms"
+      },
+      {
+       "action":"hijack-dns",
+       "protocol":"dns"
+      },
+      {
         "action":"route",
         "clash_mode":"Global",
         "outbound":"🚀Global"
@@ -283,15 +292,6 @@
         "action":"route",
         "clash_mode":"Direct",
         "outbound":"direct"
-      },
-      {
-        "action":"sniff",
-        "sniffer":"dns",
-        "timeout":"100ms"
-      },
-      {
-       "action":"hijack-dns",
-       "protocol":"dns"
       },
       {
         "action":"route",
